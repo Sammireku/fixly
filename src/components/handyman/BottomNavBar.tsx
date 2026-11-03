@@ -16,7 +16,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({ activeTab, onTabChan
   ];
 
   return (
-    <div className="bg-white border-t border-slate-100 px-6 py-2.5 flex items-center justify-between shrink-0">
+    <div className="sticky bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-2.5 flex items-center justify-between shrink-0 shadow-lg">
       {tabs.map((tab) => {
         const Icon = tab.icon;
         const isActive = activeTab === tab.id;

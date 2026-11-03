@@ -10,6 +10,8 @@ import {
   Lock,
   DollarSign,
   Camera,
+  Wrench,
+  Sparkles,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId, UserProfile } from './types';
@@ -20,6 +22,7 @@ interface Screen5ProfileProps {
   onOpenNotifications?: () => void;
   onOpenProfileSettings: () => void;
   onOpenBookingHistory: () => void;
+  onSwitchToPro: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
@@ -28,13 +31,16 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
   onOpenNotifications,
   onOpenProfileSettings,
   onOpenBookingHistory,
+  onSwitchToPro,
   onTabChange,
 }) => {
   const [copiedInvite, setCopiedInvite] = useState(false);
   const [activeHelpModal, setActiveHelpModal] = useState<'safety' | 'help' | null>(null);
 
   const handleShare = () => {
-    navigator.clipboard?.writeText(`https://handyman.app/invite/${profile.name.toLowerCase().replace(/\s+/g, '-')}`);
+    navigator.clipboard?.writeText(
+      `https://handyman.app/invite/${profile.name.toLowerCase().replace(/\s+/g, '-')}`
+    );
     setCopiedInvite(true);
     setTimeout(() => setCopiedInvite(false), 2000);
   };
@@ -90,9 +96,7 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
                 <h3 className="text-xs font-bold text-slate-900 tracking-tight">
                   {profile.name}
                 </h3>
-                {profile.isGhanaCardVerified && (
-                  <GhanaCardBadge size="sm" />
-                )}
+                {profile.isGhanaCardVerified && <GhanaCardBadge size="sm" />}
               </div>
               <span className="text-[11px] text-slate-400 font-normal block mt-0.5 tracking-tight">
                 {profile.email}
@@ -148,6 +152,32 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
 
         {/* Menu Navigation Card */}
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs divide-y divide-slate-100 overflow-hidden">
+          {/* SWITCH TO PRO BUTTON */}
+          <div
+            onClick={onSwitchToPro}
+            className="px-4 py-3.5 bg-blue-50/80 hover:bg-blue-100/80 flex items-center justify-between cursor-pointer transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-7 h-7 rounded-full bg-[#1E5BF0] text-white flex items-center justify-center shrink-0">
+                <Wrench className="w-3.5 h-3.5 stroke-[2]" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-900 tracking-tight">
+                    Switch to Pro
+                  </span>
+                  <span className="text-[9px] font-black bg-[#1E5BF0] text-white px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                    ARTISAN
+                  </span>
+                </div>
+                <span className="text-[10px] text-slate-500 font-normal block">
+                  Earn money by providing home services & taking skill tests
+                </span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#1E5BF0] group-hover:translate-x-0.5 transition-all" />
+          </div>
+
           <div
             onClick={onOpenProfileSettings}
             className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
@@ -242,7 +272,9 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
           <div className="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 space-y-3">
             <h4 className="text-sm font-bold text-slate-900 capitalize">
-              {activeHelpModal === 'safety' ? 'Safety & Privacy Guarantee' : 'Help & Customer Care'}
+              {activeHelpModal === 'safety'
+                ? 'Safety & Privacy Guarantee'
+                : 'Help & Customer Care'}
             </h4>
             <p className="text-xs text-slate-600 leading-relaxed">
               {activeHelpModal === 'safety'

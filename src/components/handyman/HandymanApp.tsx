@@ -7,6 +7,7 @@ import {
   UserProfile,
   BookingHistoryItem,
   FilterState,
+  ProProfileDetails,
 } from './types';
 import { Screen1Home } from './Screen1Home';
 import { Screen2Categories } from './Screen2Categories';
@@ -14,10 +15,12 @@ import { Screen3Professionals } from './Screen3Professionals';
 import { Screen4Confirmation } from './Screen4Confirmation';
 import { Screen5Profile } from './Screen5Profile';
 import { Screen6Wallet } from './Screen6Wallet';
+import { ProProfileScreen } from './ProProfileScreen';
 import { NotificationDrawer } from './NotificationDrawer';
 import { ProfileSettingsModal } from './ProfileSettingsModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
 import { SearchFilterModal } from './SearchFilterModal';
+import { ProOnboardingModal } from './ProOnboardingModal';
 
 export const HandymanApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('home');
@@ -25,8 +28,9 @@ export const HandymanApp: React.FC = () => {
   const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
   const [bookingHistoryOpen, setBookingHistoryOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [proOnboardingOpen, setProOnboardingOpen] = useState(false);
 
-  // User Profile State with Mini Dashboard metrics & Ghana Card
+  // User Profile State with Mini Dashboard metrics & Ghana Card & Pro profile capability
   const [userProfile, setUserProfile] = useState<UserProfile>({
     name: 'Maya Johnson',
     email: 'maya.johnson@email.com',
@@ -39,6 +43,7 @@ export const HandymanApp: React.FC = () => {
     completedBookingsCount: 14,
     emergencyContact: 'Kofi Johnson (+233 20 882 1109)',
     avatarUrl: '',
+    role: 'client',
   });
 
   // Active Filter State for Search
@@ -163,6 +168,10 @@ export const HandymanApp: React.FC = () => {
   };
 
   const handleTabChange = (tab: BottomTabId) => {
+    if (userProfile.role === 'pro' && tab === 'account') {
+      setCurrentScreen('pro_profile');
+      return;
+    }
     switch (tab) {
       case 'home':
         setCurrentScreen('home');
@@ -184,6 +193,29 @@ export const HandymanApp: React.FC = () => {
       ...prev,
       ...updated,
     }));
+  };
+
+  const handleSwitchToPro = () => {
+    if (userProfile.proProfile) {
+      setUserProfile((prev) => ({ ...prev, role: 'pro' }));
+      setCurrentScreen('pro_profile');
+    } else {
+      setProOnboardingOpen(true);
+    }
+  };
+
+  const handleCompleteProOnboarding = (proDetails: ProProfileDetails) => {
+    setUserProfile((prev) => ({
+      ...prev,
+      role: 'pro',
+      proProfile: proDetails,
+    }));
+    setCurrentScreen('pro_profile');
+  };
+
+  const handleSwitchToClient = () => {
+    setUserProfile((prev) => ({ ...prev, role: 'client' }));
+    setCurrentScreen('profile');
   };
 
   return (
@@ -233,6 +265,18 @@ export const HandymanApp: React.FC = () => {
             onOpenNotifications={() => setNotificationsOpen(true)}
             onOpenProfileSettings={() => setProfileSettingsOpen(true)}
             onOpenBookingHistory={() => setBookingHistoryOpen(true)}
+            onSwitchToPro={handleSwitchToPro}
+            onTabChange={handleTabChange}
+          />
+        )}
+
+        {currentScreen === 'pro_profile' && userProfile.proProfile && (
+          <ProProfileScreen
+            userProfile={userProfile}
+            proProfile={userProfile.proProfile}
+            onOpenNotifications={() => setNotificationsOpen(true)}
+            onSwitchToClient={handleSwitchToClient}
+            onTakeMoreSkillTests={() => setProOnboardingOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -289,6 +333,14 @@ export const HandymanApp: React.FC = () => {
             maxHourlyRate: 120,
           })
         }
+      />
+
+      {/* 5. Pro Onboarding & Skill Assessment Modal */}
+      <ProOnboardingModal
+        isOpen={proOnboardingOpen}
+        onClose={() => setProOnboardingOpen(false)}
+        userProfile={userProfile}
+        onCompleteOnboarding={handleCompleteProOnboarding}
       />
     </div>
   );

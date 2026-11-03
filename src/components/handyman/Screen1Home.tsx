@@ -17,6 +17,8 @@ import {
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId } from './types';
 
+import { FixlyLogo } from './FixlyLogo';
+
 interface Screen1HomeProps {
   onNavigateToCategories: () => void;
   onNavigateToPros: (category?: string) => void;
@@ -143,16 +145,16 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
     <div className="flex flex-col h-full bg-[#F4F5F8] text-slate-900 select-none">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto px-5 pt-7 pb-5 space-y-4">
-        {/* Top Header */}
+        {/* Top Header with Fixly Branding */}
         <div className="flex items-center justify-between">
-          <div>
-            <span className="text-xs font-normal text-slate-400 block tracking-tight">
-              Good morning,
+          <div className="flex items-center gap-3">
+            <FixlyLogo size="md" showText={true} />
+            <div className="h-6 w-px bg-slate-200 hidden sm:block" />
+            <span className="text-xs font-normal text-slate-400 hidden sm:inline tracking-tight">
+              Good morning
             </span>
-            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight mt-0.5">
-              Find a pro
-            </h1>
           </div>
+
           <button
             onClick={onOpenNotifications}
             className="w-10 h-10 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-700 hover:bg-slate-50 shadow-xs cursor-pointer transition-colors"

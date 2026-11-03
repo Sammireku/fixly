@@ -1,6 +1,8 @@
-export type ScreenId = 'home' | 'categories' | 'pros' | 'confirmation' | 'profile' | 'wallet';
+export type ScreenId = 'home' | 'categories' | 'pros' | 'confirmation' | 'profile' | 'wallet' | 'pro_profile';
 
 export type BottomTabId = 'home' | 'bookings' | 'wallet' | 'account';
+
+export type UserRole = 'client' | 'pro';
 
 export interface ProItem {
   id: string;
@@ -46,6 +48,28 @@ export interface UserProfile {
   amountInEscrow: number;
   completedBookingsCount: number;
   emergencyContact: string;
+  role: UserRole;
+  proProfile?: ProProfileDetails;
+}
+
+export interface ProProfileDetails {
+  primaryTrade: string;
+  secondaryTrades: string[];
+  hourlyRate: number;
+  experienceYears: number;
+  rating: number;
+  jobsCompleted: number;
+  onTimeRate: number;
+  problemSolvedRate: number;
+  isOnline: boolean;
+  walletAvailable: number;
+  walletPending: number;
+  walletPaidOut: number;
+  momoNumber: string;
+  momoNetwork: string;
+  testScore: number;
+  testedServices: string[];
+  certifications: string[];
 }
 
 export interface BookingHistoryItem {
@@ -71,4 +95,14 @@ export interface FilterState {
   verifiedOnly: boolean;
   insuredOnly: boolean;
   maxHourlyRate: number;
+}
+
+export interface SkillTestQuestion {
+  id: string;
+  field: string;
+  serviceName: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
 }
