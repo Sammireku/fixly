@@ -1,0 +1,128 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Registered user profile (Client, Pro Artisan, or Ops Admin)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "maxLength": 100, "description": "Full name" },
+        "email": { "type": "string", "format": "email", "description": "User email address" },
+        "role": { "type": "string", "enum": ["client", "pro", "ops"], "description": "Role in the marketplace" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Phone or Mobile Money number" },
+        "language": { "type": "string", "enum": ["en", "twi", "ga"], "description": "Preferred UI/audio language" },
+        "createdAt": { "type": "string", "description": "Creation ISO date" },
+        "updatedAt": { "type": "string", "description": "Last update ISO date" }
+      },
+      "required": ["id", "name", "role", "createdAt"]
+    },
+    "Job": {
+      "title": "Job",
+      "description": "On-demand repair or project service request with escrow tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique job identifier" },
+        "clientId": { "type": "string", "description": "Client user UID" },
+        "proId": { "type": "string", "description": "Assigned pro artisan UID or empty" },
+        "trade": { "type": "string", "description": "Trade category (plumbing, electrical, etc.)" },
+        "type": { "type": "string", "enum": ["on_demand", "project"], "description": "Job model" },
+        "title": { "type": "string", "maxLength": 150, "description": "Job headline" },
+        "description": { "type": "string", "maxLength": 1000, "description": "Job description or client notes" },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "requested",
+            "matched",
+            "pro_en_route",
+            "arrived",
+            "diagnosed",
+            "quote_approved",
+            "in_progress",
+            "completed",
+            "hold_period",
+            "closed",
+            "disputed"
+          ],
+          "description": "Progress state"
+        },
+        "basePrice": { "type": "number", "description": "Agreed price in GHS" },
+        "revisedQuote": { "type": "number", "description": "Diagnostic revised quote in GHS" },
+        "protectionFee": { "type": "number", "description": "5% Escrow guarantee fee in GHS" },
+        "totalAmount": { "type": "number", "description": "Total amount paid into escrow" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["id", "clientId", "trade", "type", "title", "status", "createdAt"]
+    },
+    "Dispute": {
+      "title": "Dispute",
+      "description": "Escrow mediation or quality claim issue",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Dispute ID" },
+        "jobId": { "type": "string", "description": "Reference Job ID" },
+        "initiatorId": { "type": "string", "description": "User who opened the dispute" },
+        "category": { "type": "string", "description": "Issue reason" },
+        "description": { "type": "string", "maxLength": 1000, "description": "Details of the claim" },
+        "status": { "type": "string", "enum": ["open", "pro_responded", "ops_review", "resolved", "escalated_to_claim"] },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "jobId", "initiatorId", "category", "status", "createdAt"]
+    },
+    "SosAlert": {
+      "title": "SosAlert",
+      "description": "Emergency security beacon triggered during a job",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Alert ID" },
+        "jobId": { "type": "string", "description": "Associated job ID" },
+        "userId": { "type": "string", "description": "User who pressed SOS" },
+        "userRole": { "type": "string", "description": "Role of triggering user" },
+        "status": { "type": "string", "enum": ["active", "resolved"] },
+        "createdAt": { "type": "string", "description": "Alert timestamp" }
+      },
+      "required": ["id", "userId", "status", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Real-time chat message between client and artisan for active jobs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message ID" },
+        "jobId": { "type": "string", "description": "Associated job ID" },
+        "senderId": { "type": "string", "description": "UID of sender" },
+        "senderName": { "type": "string", "description": "Display name of sender" },
+        "senderRole": { "type": "string", "enum": ["client", "pro", "ops"], "description": "Role of sender" },
+        "text": { "type": "string", "description": "Optional message body" },
+        "photoUrl": { "type": "string", "description": "Optional image URL" },
+        "voiceNoteUrl": { "type": "string", "description": "Optional audio URL" },
+        "voiceDurationSeconds": { "type": "number", "description": "Audio length in seconds" },
+        "createdAt": { "type": "string", "description": "Timestamp" }
+      },
+      "required": ["id", "jobId", "senderId", "senderName", "senderRole", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user and artisan accounts"
+    },
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Collection of active and completed marketplace jobs"
+    },
+    "/jobs/{jobId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Subcollection of real-time chat messages between client and pro"
+    },
+    "/disputes/{disputeId}": {
+      "schema": "Dispute",
+      "description": "Disputes filed against jobs for mediation"
+    },
+    "/sos_alerts/{alertId}": {
+      "schema": "SosAlert",
+      "description": "Emergency SOS notifications for real-time safety monitoring"
+    }
+  }
+}

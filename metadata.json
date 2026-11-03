@@ -1,0 +1,6 @@
+{
+  "name": "Fixly",
+  "description": "Trusted location-based handyman marketplace in Ghana with escrow protection, verified artisans, multilingual voice support, and offline sync.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

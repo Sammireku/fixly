@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Jobs collection
+    match /jobs/{jobId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(jobId) && incoming().clientId == request.auth.uid;
+      allow update: if isSignedIn() && (
+        existing().clientId == request.auth.uid ||
+        existing().proId == request.auth.uid ||
+        existing().proId == null ||
+        existing().proId == '' ||
+        incoming().proId == request.auth.uid
+      );
+      allow delete: if isSignedIn() && existing().clientId == request.auth.uid && existing().status == 'draft';
+
+      // Real-time chat messages between client and artisan
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && isValidId(messageId) && incoming().senderId == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+
+    // Disputes collection
+    match /disputes/{disputeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(disputeId) && incoming().initiatorId == request.auth.uid;
+      allow update: if isSignedIn();
+    }
+
+    // SOS Alerts collection
+    match /sos_alerts/{alertId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(alertId) && incoming().userId == request.auth.uid;
+      allow update: if isSignedIn();
+    }
+  }
+}
