@@ -21,6 +21,8 @@ import { ProfileSettingsModal } from './ProfileSettingsModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
 import { SearchFilterModal } from './SearchFilterModal';
 import { ProOnboardingModal } from './ProOnboardingModal';
+import { EmergencySosModal } from '../EmergencySosModal';
+import { DisputeModal } from '../DisputeModal';
 
 export const HandymanApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('home');
@@ -29,6 +31,9 @@ export const HandymanApp: React.FC = () => {
   const [bookingHistoryOpen, setBookingHistoryOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [proOnboardingOpen, setProOnboardingOpen] = useState(false);
+  const [sosModalOpen, setSosModalOpen] = useState(false);
+  const [disputeModalOpen, setDisputeModalOpen] = useState(false);
+  const [disputeJobId, setDisputeJobId] = useState('BKG-9921');
 
   // User Profile State with Mini Dashboard metrics & Ghana Card & Pro profile capability
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -220,7 +225,7 @@ export const HandymanApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#ECEEF2] text-slate-900 flex justify-center font-sans antialiased selection:bg-[#1E5BF0] selection:text-white">
-      {/* Responsive App Container (No phone borders, fully responsive for mobile, tablet, and desktop) */}
+      {/* Responsive App Container */}
       <div className="w-full max-w-md sm:max-w-lg md:max-w-xl min-h-screen bg-[#F4F5F8] flex flex-col shadow-xl sm:border-x sm:border-slate-200/80 relative">
         {currentScreen === 'home' && (
           <Screen1Home
@@ -229,6 +234,7 @@ export const HandymanApp: React.FC = () => {
             onSelectService={handleSelectService}
             onOpenNotifications={() => setNotificationsOpen(true)}
             onOpenFilters={() => setFiltersOpen(true)}
+            onOpenSos={() => setSosModalOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -297,7 +303,7 @@ export const HandymanApp: React.FC = () => {
         onClose={() => setNotificationsOpen(false)}
       />
 
-      {/* 2. Profile Settings & Mini Dashboard Modal (with photo upload & details edit) */}
+      {/* 2. Profile Settings & Mini Dashboard Modal */}
       <ProfileSettingsModal
         isOpen={profileSettingsOpen}
         onClose={() => setProfileSettingsOpen(false)}
@@ -305,7 +311,7 @@ export const HandymanApp: React.FC = () => {
         onUpdateProfile={handleUpdateProfile}
       />
 
-      {/* 3. Booking History Modal (job, date, pro, price, receipts & rebook) */}
+      {/* 3. Booking History Modal */}
       <BookingHistoryModal
         isOpen={bookingHistoryOpen}
         onClose={() => setBookingHistoryOpen(false)}
@@ -313,7 +319,7 @@ export const HandymanApp: React.FC = () => {
         onRebook={handleRebook}
       />
 
-      {/* 4. Search Filter Modal (proximity, rating, jobs completed, verified, insured) */}
+      {/* 4. Search Filter Modal */}
       <SearchFilterModal
         isOpen={filtersOpen}
         onClose={() => setFiltersOpen(false)}
@@ -341,6 +347,19 @@ export const HandymanApp: React.FC = () => {
         onClose={() => setProOnboardingOpen(false)}
         userProfile={userProfile}
         onCompleteOnboarding={handleCompleteProOnboarding}
+      />
+
+      {/* 6. Emergency 1-Tap SOS Modal */}
+      <EmergencySosModal
+        isOpen={sosModalOpen}
+        onClose={() => setSosModalOpen(false)}
+      />
+
+      {/* 7. Dispute & Mediation Modal */}
+      <DisputeModal
+        isOpen={disputeModalOpen}
+        onClose={() => setDisputeModalOpen(false)}
+        jobId={disputeJobId}
       />
     </div>
   );
