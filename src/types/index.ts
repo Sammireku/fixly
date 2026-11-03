@@ -4,17 +4,61 @@ export type LanguageCode = 'en' | 'twi' | 'ga' | 'ewe' | 'hausa';
 
 export type NetworkMode = 'online' | 'patchy' | 'offline';
 
+export type FlowTag = 'OD' | 'PR' | 'RC';
+
 export type TradeType =
   | 'plumbing'
   | 'electrical'
+  | 'appliance_repair'
   | 'carpentry'
-  | 'painting'
-  | 'pop_ceilings'
-  | 'tiling'
+  | 'ceilings_walls'
+  | 'tiling_masonry'
+  | 'roofing'
+  | 'welding_metalwork'
+  | 'aluminium_glass'
   | 'upholstery'
+  | 'gardening_outdoor'
+  | 'cleaning_pest_control'
+  | 'laundry_garment'
+  | 'security_smart_home'
+  | 'moving_heavy_work'
+  | 'general_handyman'
+  | 'vehicle_adjacent'
+  // Legacy aliases
+  | 'pop_ceilings'
+  | 'painting'
+  | 'tiling'
   | 'ac_refrigeration';
 
-export type JobType = 'on_demand' | 'project';
+export type JobType = 'on_demand' | 'project' | 'recurring';
+
+export interface ServiceCategoryDef {
+  id: string;
+  trade: TradeType;
+  title: string;
+  subtitle: string;
+  flows: FlowTag[];
+  flowBadgeText: string;
+  iconName: string;
+  description: string;
+  popularServicesCount: number;
+}
+
+export interface CatalogServiceItem {
+  id: string;
+  trade: TradeType;
+  categoryTitle: string;
+  title: string;
+  titleTwi: string;
+  titleGa: string;
+  basePrice: number; // In GHS
+  callOutFee: number;
+  includes: string;
+  includesTwi: string;
+  popular?: boolean;
+  type: JobType;
+  flowTag: FlowTag;
+}
 
 export type JobStatus =
   | 'draft'

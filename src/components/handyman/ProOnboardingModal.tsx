@@ -19,6 +19,18 @@ import {
   Lightbulb,
   Fan,
   Paintbrush,
+  Tv,
+  Hammer,
+  Grid,
+  Home,
+  Shield,
+  Maximize2,
+  Armchair,
+  Flower2,
+  Shirt,
+  Camera,
+  Truck,
+  Car,
 } from 'lucide-react';
 import { SkillTestQuestion, UserProfile, ProProfileDetails } from './types';
 import { GhanaCardBadge } from './GhanaCardBadge';
@@ -32,53 +44,174 @@ interface ProOnboardingModalProps {
 
 const FIELD_SERVICES: Record<string, { label: string; icon: any; services: string[] }> = {
   Plumbing: {
-    label: 'Plumbing & Pipeworks',
+    label: 'Plumbing & Water',
     icon: Droplets,
     services: [
       'Leaks & Pipe Repairs',
       'Faucet & Valve Replacement',
       'Water Heater Service',
       'Drain & Toilet Unclogging',
+      'Polytank & Pump Setup',
     ],
   },
   Electrical: {
-    label: 'Electrical & Wiring',
+    label: 'Electrical Services',
     icon: Lightbulb,
     services: [
       'Circuit Breakers & Load Test',
       'Generator Changeover Switch',
       'Ceiling Fans & Lighting Fit',
-      'Wall Outlets & Earthing',
+      'Solar Panel & Inverter Setup',
+    ],
+  },
+  Appliance: {
+    label: 'Appliance & Equipment',
+    icon: Tv,
+    services: [
+      'Split Unit AC Service',
+      'Refrigerator & Freezer Repair',
+      'Washing Machine Fix',
+      'TV Mounting & Decoders',
+    ],
+  },
+  Carpentry: {
+    label: 'Carpentry & Woodwork',
+    icon: Hammer,
+    services: [
+      'Door Locks & Hinges',
+      'Kitchen Cabinet Making',
+      'Wardrobes & Shelving',
+      'Flat-Pack Assembly',
+    ],
+  },
+  CeilingsWalls: {
+    label: 'Ceilings & Walls',
+    icon: Paintbrush,
+    services: [
+      'POP False Ceiling',
+      'Interior Room Painting',
+      'Drywall Partitions',
+      'Damp & Crack Repair',
+    ],
+  },
+  TilingMasonry: {
+    label: 'Tiling & Masonry',
+    icon: Grid,
+    services: [
+      'Porcelain Floor Tiling',
+      'Wall Tile Regrouting',
+      'Compound Interlock Paving',
+      'Block & Brick Work',
+    ],
+  },
+  Roofing: {
+    label: 'Roofing Services',
+    icon: Home,
+    services: [
+      'Roof Leak Flashing Repair',
+      'Roofing Sheet Swap',
+      'Rain Gutters & Downpipes',
+      'Fascia Board Work',
+    ],
+  },
+  Welding: {
+    label: 'Welding & Metalwork',
+    icon: Shield,
+    services: [
+      'Burglar-Proof Window Guards',
+      'Security Gates & Doors',
+      'Carport Frames',
+      'Steel Tank Stands',
+    ],
+  },
+  AluminiumGlass: {
+    label: 'Aluminium & Glass',
+    icon: Maximize2,
+    services: [
+      'Aluminium Sliding Doors',
+      'Glass Replacement',
+      'Shower Enclosures',
+      'Mosquito Netting',
+    ],
+  },
+  Upholstery: {
+    label: 'Upholstery & Furniture',
+    icon: Armchair,
+    services: [
+      'Sofa Reupholstery',
+      'Dining Chair Cushion Recover',
+      'Curtains & Soft Drapes',
+      'Furniture Polishing',
+    ],
+  },
+  Gardening: {
+    label: 'Gardening & Outdoor',
+    icon: Flower2,
+    services: [
+      'Lawn Mowing & Edging',
+      'Hedge & Shrub Trimming',
+      'Tree Pruning',
+      'Artificial Turf Laying',
+    ],
+  },
+  Cleaning: {
+    label: 'Cleaning & Fumigation',
+    icon: Sparkles,
+    services: [
+      'House Deep Clean',
+      'Sofa & Carpet Wash',
+      'Post-Construction Cleanup',
+      'Pest Fumigation',
+    ],
+  },
+  Laundry: {
+    label: 'Laundry & Garment Care',
+    icon: Shirt,
+    services: [
+      'Doorstep Wash & Fold',
+      'Steam Press & Ironing',
+      'Dry Cleaning Services',
+      'Clothing Alterations',
+    ],
+  },
+  Security: {
+    label: 'Security & Smart Home',
+    icon: Camera,
+    services: [
+      '4-Camera CCTV Setup',
+      'Electric Fence Installation',
+      'Smart Lock Fitting',
+      'Intercom & Doorbell',
+    ],
+  },
+  Moving: {
+    label: 'Moving & Heavy Work',
+    icon: Truck,
+    services: [
+      'Home & Office Moving',
+      'Junk & Waste Haulage',
+      'Furniture Lifting',
+      'Material Offloading',
     ],
   },
   Handyman: {
     label: 'General Handyman',
     icon: Wrench,
     services: [
-      'Furniture Assembly',
-      'Door Locks & Hinges',
-      'TV Wall Mounts & Shelves',
-      'General Home Maintenance',
+      'Picture & Mirror Hanging',
+      'Curtain Rail Fitting',
+      'Minor Home Repairs',
+      'Hourly Odd Jobs',
     ],
   },
-  Cooling: {
-    label: 'AC & Refrigeration',
-    icon: Fan,
+  Vehicle: {
+    label: 'Vehicle-Adjacent Care',
+    icon: Car,
     services: [
-      'Split Unit AC Service',
-      'Gas Pressure Test & Refill',
-      'Compressor & Coil Cleaning',
-      'Refrigerator Thermostat',
-    ],
-  },
-  Painting: {
-    label: 'Painting & POP',
-    icon: Paintbrush,
-    services: [
-      'Interior Room Painting',
-      'Wall Putty & Primer',
-      'POP False Ceiling Repair',
-      'Exterior Weather Coating',
+      'Doorstep Car Detail Wash',
+      'Mobile Battery Jumpstart',
+      'Roadside Tyre Swap',
+      'Mobile Mechanic Call-out',
     ],
   },
 };
@@ -90,7 +223,7 @@ const SAMPLE_QUESTION_BANK: Record<string, SkillTestQuestion[]> = {
       field: 'Plumbing',
       serviceName: 'Leaks & Pipe Repairs',
       question:
-        'When assembling threaded brass water fittings, what sealant material should be wrapped clockwise around the male threads to prevent high-pressure leaks?',
+        'When assembling threaded brass water fittings, what sealant material should be wrapped clockwise around male threads to prevent high-pressure leaks?',
       options: [
         'A) Standard electrical tape',
         'B) PTFE (Teflon) Thread Seal Tape',
@@ -238,7 +371,6 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
   const [experienceYears, setExperienceYears] = useState<number>(8);
 
   // Test State
-  const [currentQuestionIdx, setCurrentQuestionIdx] = useState<number>(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [testSubmitted, setTestSubmitted] = useState<boolean>(false);
   const [testScore, setTestScore] = useState<number>(0);
@@ -357,15 +489,15 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
             <div className="space-y-4 animate-fade-in">
               <div>
                 <h4 className="text-sm font-extrabold text-slate-900">
-                  Select Primary Field of Expertise
+                  Select Primary Field of Expertise (17 Categories)
                 </h4>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Choose your trade. You will take a field technical assessment test for verification.
                 </p>
               </div>
 
-              {/* Trade Fields Grid */}
-              <div className="grid grid-cols-2 gap-2.5">
+              {/* Trade Fields Grid (Scrollable grid of 17 categories) */}
+              <div className="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1 bg-slate-50 border border-slate-200 rounded-2xl">
                 {Object.entries(FIELD_SERVICES).map(([key, data]) => {
                   const Icon = data.icon;
                   const isSelected = selectedField === key;
@@ -376,20 +508,20 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
                         setSelectedField(key);
                         setSelectedServices(data.services.slice(0, 2));
                       }}
-                      className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between ${
+                      className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center gap-2.5 ${
                         isSelected
-                          ? 'bg-blue-50/80 border-[#1E5BF0] ring-2 ring-blue-500/20 shadow-xs'
-                          : 'bg-slate-50/70 hover:bg-slate-100 border-slate-200'
+                          ? 'bg-blue-50/90 border-[#1E5BF0] ring-2 ring-blue-500/20 shadow-2xs'
+                          : 'bg-white hover:bg-slate-100 border-slate-200'
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-full bg-[#EBF1FF] text-[#1E5BF0] flex items-center justify-center mb-2">
-                        <Icon className="w-4 h-4 stroke-[2]" />
+                      <div className="w-7 h-7 rounded-lg bg-[#EBF1FF] text-[#1E5BF0] flex items-center justify-center shrink-0">
+                        <Icon className="w-3.5 h-3.5 stroke-[2]" />
                       </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-900 block">
+                      <div className="min-w-0">
+                        <span className="text-[11px] font-bold text-slate-900 block truncate">
                           {data.label}
                         </span>
-                        <span className="text-[10px] text-slate-400 block mt-0.5">
+                        <span className="text-[9px] text-slate-400 block font-medium">
                           {data.services.length} services
                         </span>
                       </div>
@@ -401,7 +533,7 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
               {/* Specific Services Offered */}
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <label className="text-xs font-bold text-slate-800 block">
-                  Specific {selectedField} Services You Offer:
+                  Specific {FIELD_SERVICES[selectedField]?.label || selectedField} Services You Offer:
                 </label>
                 <div className="space-y-1.5">
                   {FIELD_SERVICES[selectedField]?.services.map((srv) => {
@@ -436,14 +568,14 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
               <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
                 <div>
                   <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Hourly Rate ($/hr)
+                    Hourly Rate (GH₵/hr)
                   </label>
                   <input
                     type="number"
                     value={hourlyRate}
                     onChange={(e) => setHourlyRate(Number(e.target.value))}
-                    min={25}
-                    max={150}
+                    min={30}
+                    max={500}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none"
                   />
                 </div>
@@ -474,12 +606,12 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
                     Skill Testing System
                   </span>
                   <h4 className="text-sm font-extrabold text-slate-900 mt-0.5">
-                    {selectedField} Trade Technical Assessment
+                    {FIELD_SERVICES[selectedField]?.label || selectedField} Technical Assessment
                   </h4>
                 </div>
 
                 <span className="px-2.5 py-1 bg-blue-50 text-[#1E5BF0] border border-blue-200 rounded-full text-[10px] font-bold">
-                  3 Questions
+                  {currentQuestions.length} Questions
                 </span>
               </div>
 
@@ -698,7 +830,7 @@ export const ProOnboardingModal: React.FC<ProOnboardingModalProps> = ({
                   Ready to activate your Pro Profile!
                 </span>
                 <p className="text-[11px] leading-relaxed text-blue-900">
-                  You are registered for <strong>{selectedField}</strong> at <strong>${hourlyRate}/hr</strong>. Your Ghana Card badge and test score ({testScore || 100}%) will appear on your pro profile card.
+                  You are registered for <strong>{selectedField}</strong> at <strong>GH₵{hourlyRate}/hr</strong>. Your Ghana Card badge and test score ({testScore || 100}%) will appear on your pro profile card.
                 </p>
               </div>
             </div>

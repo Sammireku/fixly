@@ -14,14 +14,22 @@ import {
   Sparkles,
   MapPin,
   Clock,
-  ShieldCheck,
   ShieldAlert,
-  Compass,
   Layers,
+  Tv,
+  Hammer,
+  Truck,
+  Car,
+  Shirt,
+  Camera,
+  Flower2,
+  Maximize2,
+  Grid,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId } from './types';
 import { FixlyLogo } from './FixlyLogo';
+import { SERVICE_CATALOG, SERVICE_CATEGORIES } from '../../data/catalog';
 
 interface Screen1HomeProps {
   onNavigateToCategories: () => void;
@@ -33,15 +41,25 @@ interface Screen1HomeProps {
   onTabChange: (tab: BottomTabId) => void;
 }
 
-interface ServiceItem {
-  id: string;
-  title: string;
-  category: string;
-  price: number;
-  priceLabel: string;
-  icon: any;
-  popular?: boolean;
-}
+const ICON_MAP: Record<string, React.ElementType> = {
+  plumbing: Droplets,
+  electrical: Lightbulb,
+  appliance_repair: Tv,
+  carpentry: Hammer,
+  ceilings_walls: Paintbrush,
+  tiling_masonry: Grid,
+  roofing: Layers,
+  welding_metalwork: ShieldAlert,
+  aluminium_glass: Maximize2,
+  upholstery: Sparkles,
+  gardening_outdoor: Flower2,
+  cleaning_pest_control: Paintbrush,
+  laundry_garment: Shirt,
+  security_smart_home: Camera,
+  moving_heavy_work: Truck,
+  general_handyman: Wrench,
+  vehicle_adjacent: Car,
+};
 
 export const Screen1Home: React.FC<Screen1HomeProps> = ({
   onNavigateToCategories,
@@ -55,96 +73,29 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [gpsCode, setGpsCode] = useState('GA-183-9021');
 
+  // Top 4 quick category shortcuts
   const quickCategories = [
-    { id: 'handyman', label: 'Handyman', icon: Wrench },
     { id: 'plumbing', label: 'Plumbing', icon: Droplets },
-    { id: 'electric', label: 'Electric', icon: Lightbulb },
-    { id: 'cleaning', label: 'Cleaning', icon: Paintbrush },
+    { id: 'electrical', label: 'Electrical', icon: Lightbulb },
+    { id: 'appliance_repair', label: 'Appliance', icon: Tv },
+    { id: 'cleaning_pest_control', label: 'Cleaning', icon: Sparkles },
   ];
 
-  // Comprehensive searchable services catalog
-  const allServices: ServiceItem[] = [
-    {
-      id: 'furniture',
-      title: 'Furniture assembly',
-      category: 'Handyman',
-      price: 45,
-      priceLabel: 'From $45',
-      icon: Briefcase,
-      popular: true,
-    },
-    {
-      id: 'plumbing',
-      title: 'Plumbing fix',
-      category: 'Plumbing',
-      price: 60,
-      priceLabel: 'From $60',
-      icon: Droplets,
-      popular: true,
-    },
-    {
-      id: 'ac_split',
-      title: 'AC & Split service',
-      category: 'Cooling',
-      price: 50,
-      priceLabel: 'From $50',
-      icon: Fan,
-      popular: true,
-    },
-    {
-      id: 'electrical_diag',
-      title: 'Electrical diagnostic',
-      category: 'Electric',
-      price: 40,
-      priceLabel: 'From $40',
-      icon: Lightbulb,
-      popular: true,
-    },
-    {
-      id: 'pipe_leak',
-      title: 'Pipe leak & fixture seal',
-      category: 'Plumbing',
-      price: 55,
-      priceLabel: 'From $55',
-      icon: Droplets,
-    },
-    {
-      id: 'breaker_panel',
-      title: 'Circuit breaker & fuse replacement',
-      category: 'Electric',
-      price: 65,
-      priceLabel: 'From $65',
-      icon: Zap,
-    },
-    {
-      id: 'door_lock',
-      title: 'Door lock & hinge replacement',
-      category: 'Handyman',
-      price: 35,
-      priceLabel: 'From $35',
-      icon: Wrench,
-    },
-    {
-      id: 'wall_painting',
-      title: 'Interior room painting',
-      category: 'Painting',
-      price: 110,
-      priceLabel: 'From $110',
-      icon: Paintbrush,
-    },
-  ];
+  // Popular services selected from catalog
+  const popularServices = useMemo(() => {
+    return SERVICE_CATALOG.filter((s) => s.popular).slice(0, 4);
+  }, []);
 
-  // Filter 4 popular services
-  const popularServices = allServices.filter((s) => s.popular);
-
-  // Dynamic live search results as user types characters
+  // Dynamic live search results across ALL 17 categories as user types
   const liveSearchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
-    return allServices.filter(
+    return SERVICE_CATALOG.filter(
       (s) =>
         s.title.toLowerCase().includes(q) ||
-        s.category.toLowerCase().includes(q)
+        s.categoryTitle.toLowerCase().includes(q) ||
+        s.includes.toLowerCase().includes(q) ||
+        s.titleTwi.toLowerCase().includes(q)
     );
   }, [searchQuery]);
 
@@ -209,7 +160,7 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') onNavigateToPros(searchQuery || undefined);
               }}
-              placeholder="Search services, pros or zip"
+              placeholder="Search across 17 categories & services..."
               className="w-full bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none"
             />
             {searchQuery && (
@@ -233,44 +184,57 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
 
           {/* DYNAMIC LIVE SEARCH LIST: Displays as characters are entered */}
           {searchQuery.trim().length > 0 && (
-            <div className="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden divide-y divide-slate-100 animate-fade-in max-h-64 overflow-y-auto">
+            <div className="absolute left-0 right-0 top-full mt-1.5 z-30 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden divide-y divide-slate-100 animate-fade-in max-h-72 overflow-y-auto">
               <div className="px-3.5 py-2 bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
                 <span>Matching Services ({liveSearchResults.length})</span>
                 <span className="text-blue-600 font-semibold lowercase">Tap to book</span>
               </div>
               {liveSearchResults.length === 0 ? (
                 <div className="p-4 text-center text-xs text-slate-400">
-                  No services matching "{searchQuery}". Try "plumbing", "electric", or "handyman".
+                  No services matching "{searchQuery}". Try "plumbing", "ac", or "painting".
                 </div>
               ) : (
                 liveSearchResults.map((srv) => {
-                  const Icon = srv.icon;
+                  const Icon = ICON_MAP[srv.trade] || Wrench;
                   return (
                     <div
                       key={srv.id}
                       onClick={() => {
-                        onSelectService(srv.title, srv.price);
+                        onSelectService(srv.title, srv.basePrice);
                         setSearchQuery('');
                       }}
                       className="px-3.5 py-2.5 flex items-center justify-between hover:bg-blue-50/50 cursor-pointer transition-colors group"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-[#EBF1FF] text-[#1E5BF0] flex items-center justify-center shrink-0">
-                          <Icon className="w-3.5 h-3.5 stroke-[2]" />
+                      <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                        <div className="w-8 h-8 rounded-full bg-[#EBF1FF] text-[#1E5BF0] flex items-center justify-center shrink-0">
+                          <Icon className="w-4 h-4 stroke-[2]" />
                         </div>
-                        <div>
-                          <span className="text-xs font-bold text-slate-900 group-hover:text-[#1E5BF0] transition-colors block">
-                            {srv.title}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-medium">
-                            {srv.category}
+                        <div className="truncate">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-900 group-hover:text-[#1E5BF0] transition-colors truncate">
+                              {srv.title}
+                            </span>
+                            <span
+                              className={`text-[8px] font-extrabold px-1 rounded ${
+                                srv.flowTag === 'OD'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : srv.flowTag === 'PR'
+                                  ? 'bg-purple-100 text-purple-700'
+                                  : 'bg-emerald-100 text-emerald-700'
+                              }`}
+                            >
+                              {srv.flowTag}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-medium block truncate">
+                            {srv.categoryTitle} • {srv.includes}
                           </span>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <span className="text-xs font-bold text-slate-800">
-                          {srv.priceLabel}
+                          GH₵{srv.basePrice}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#1E5BF0] group-hover:translate-x-0.5 transition-all" />
                       </div>
@@ -285,13 +249,13 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
         {/* TWO ENTRY CARDS: Need Someone Now (On-Demand) vs. Plan a Project (Projects) */}
         <div className="grid grid-cols-2 gap-2.5">
           <div
-            onClick={() => onSelectService('Urgent Plumbing / Electrical Fix', 50)}
+            onClick={() => onSelectService('Urgent On-Demand Plumbing / Electrical Fix', 150)}
             className="p-3.5 rounded-2xl bg-[#1E5BF0] text-white shadow-sm cursor-pointer hover:opacity-95 transition-all flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between mb-2">
               <Clock className="w-5 h-5 text-blue-200 stroke-[2]" />
               <span className="text-[9px] font-bold bg-white/20 px-1.5 py-0.5 rounded text-white">
-                RAPID
+                OD
               </span>
             </div>
             <div>
@@ -310,8 +274,8 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
           >
             <div className="flex items-center justify-between mb-2">
               <Layers className="w-5 h-5 text-[#1E5BF0] stroke-[2]" />
-              <span className="text-[9px] font-bold bg-blue-50 text-[#1E5BF0] px-1.5 py-0.5 rounded">
-                PROJECT
+              <span className="text-[9px] font-bold bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded">
+                PR / RC
               </span>
             </div>
             <div>
@@ -325,7 +289,7 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
           </div>
         </div>
 
-        {/* Horizontal Category Carousel */}
+        {/* Quick Category Shortcuts */}
         <div className="grid grid-cols-4 gap-2 pt-0.5">
           {quickCategories.map((cat) => {
             const Icon = cat.icon;
@@ -346,26 +310,26 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
           })}
         </div>
 
-        {/* Promo Hero Banner (Royal Blue) */}
+        {/* Promo Banner: All 17 Categories Available */}
         <div
           onClick={onNavigateToCategories}
           className="bg-[#1E5BF0] text-white rounded-2xl p-4.5 cursor-pointer hover:opacity-98 transition-all shadow-sm relative overflow-hidden group"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white tracking-tight">
-              Book a pro today
+              Explore All 17 Service Categories
             </h3>
             <span className="bg-white/20 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-xs">
-              NEW
+              OD • PR • RC
             </span>
           </div>
 
           <p className="text-xs text-blue-100 font-medium mt-1 leading-snug">
-            Get 20% off your first home service
+            Plumbing, Electrical, Appliance, POP, Tiling, Security & 11 More
           </p>
 
           <p className="text-[10px] text-blue-200/90 font-normal mt-3 tracking-tight">
-            Verified pros • fast booking • clear pricing
+            Ghana Card verified pros • Escrow protected • Instant dispatch
           </p>
         </div>
 
@@ -379,28 +343,33 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
               onClick={onNavigateToCategories}
               className="text-xs font-semibold text-[#1E5BF0] hover:underline cursor-pointer tracking-tight"
             >
-              See all
+              See all 17
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-2.5">
             {popularServices.map((service) => {
-              const Icon = service.icon;
+              const Icon = ICON_MAP[service.trade] || Wrench;
               return (
                 <div
                   key={service.id}
-                  onClick={() => onSelectService(service.title, service.price)}
+                  onClick={() => onSelectService(service.title, service.basePrice)}
                   className="bg-white rounded-2xl border border-slate-200/80 p-3.5 shadow-xs cursor-pointer hover:border-blue-300 hover:shadow-sm transition-all flex flex-col justify-between group active:scale-98"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#EBF1FF] flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
-                    <Icon className="w-4 h-4 text-[#1E5BF0] stroke-[2]" />
+                  <div className="flex items-center justify-between mb-2.5">
+                    <div className="w-8 h-8 rounded-full bg-[#EBF1FF] flex items-center justify-center group-hover:scale-105 transition-transform">
+                      <Icon className="w-4 h-4 text-[#1E5BF0] stroke-[2]" />
+                    </div>
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-50 text-[#1E5BF0]">
+                      {service.flowTag}
+                    </span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-slate-900 tracking-tight leading-snug">
+                    <h4 className="text-xs font-bold text-slate-900 tracking-tight leading-snug line-clamp-1">
                       {service.title}
                     </h4>
                     <span className="text-[10px] text-slate-400 font-medium block mt-0.5">
-                      {service.priceLabel}
+                      From GH₵{service.basePrice}
                     </span>
                   </div>
                 </div>

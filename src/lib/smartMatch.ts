@@ -5,36 +5,67 @@ import { ACCRA_AREAS } from '../data/catalog';
 const TRADE_KEYWORDS: Record<TradeType, string[]> = {
   plumbing: [
     'leak', 'pipe', 'tap', 'sink', 'toilet', 'drain', 'water', 'burst', 'flush', 'valve',
-    'heater', 'sewage', 'pressure', 'clog', 'drip', 'mixer', 'plumber', 'pvc', 'tank',
+    'heater', 'sewage', 'pressure', 'clog', 'drip', 'mixer', 'plumber', 'pvc', 'tank', 'polytank',
   ],
   electrical: [
     'spark', 'power', 'wire', 'wiring', 'socket', 'switch', 'light', 'bulb', 'breaker',
     'fuse', 'short circuit', 'tripping', 'electrician', 'generator', 'inverter', 'voltage',
-    'conduit', 'meter', 'shock',
+    'conduit', 'meter', 'shock', 'solar',
+  ],
+  appliance_repair: [
+    'ac', 'air conditioner', 'cooling', 'fridge', 'refrigerator', 'freezer', 'gas refill',
+    'compressor', 'washing machine', 'microwave', 'tv', 'decoder', 'dispenser',
   ],
   carpentry: [
     'door', 'lock', 'hinge', 'cabinet', 'wood', 'table', 'chair', 'furniture', 'shelf',
-    'cupboard', 'window frame', 'carpenter', 'handle', 'drawer', 'timber',
+    'cupboard', 'window frame', 'carpenter', 'handle', 'drawer', 'timber', 'flat-pack',
   ],
-  painting: [
-    'paint', 'wall', 'color', 'brush', 'coat', 'peeling', 'primer', 'stain', 'exterior',
-    'interior', 'emulsion', 'gloss', 'painter', 'scraped',
-  ],
-  pop_ceilings: [
+  ceilings_walls: [
     'pop', 'ceiling', 'plaster', 'gypsum', 'moulding', 'board', 'crack', 'damp ceiling',
-    'cornice', 'suspension', 'false ceiling',
+    'cornice', 'false ceiling', 'wall', 'paint', 'putty', 'drywall',
   ],
-  tiling: [
+  tiling_masonry: [
     'tile', 'tiling', 'floor', 'grout', 'ceramic', 'porcelain', 'cracked tile', 'bathroom floor',
-    'kitchen splash', 'marble', 'granite',
+    'paving', 'block', 'brick', 'screed', 'mason',
+  ],
+  roofing: [
+    'roof', 'leak', 'sheet', 'gutter', 'downpipe', 'fascia', 'roofing', 'soffit',
+  ],
+  welding_metalwork: [
+    'welding', 'burglar', 'gate', 'metal', 'steel', 'iron', 'handrail', 'razor wire', 'carport',
+  ],
+  aluminium_glass: [
+    'aluminium', 'glass', 'sliding', 'mirror', 'shower enclosure', 'mosquito net', 'window',
   ],
   upholstery: [
     'sofa', 'couch', 'cushion', 'fabric', 'foam', 'leather', 'reupholster', 'curtain', 'seat',
   ],
-  ac_refrigeration: [
-    'ac', 'air conditioner', 'cooling', 'fridge', 'refrigerator', 'freezer', 'gas refill',
-    'compressor', 'not cooling', 'hissing', 'chiller',
+  gardening_outdoor: [
+    'lawn', 'grass', 'hedge', 'tree', 'pruning', 'garden', 'landscape', 'turf', 'weed',
   ],
+  cleaning_pest_control: [
+    'cleaning', 'deep clean', 'carpet', 'tank clean', 'fumigation', 'pest', 'cockroach', 'pest control',
+  ],
+  laundry_garment: [
+    'laundry', 'wash', 'iron', 'dry clean', 'duvet', 'shoe', 'tailor', 'alteration',
+  ],
+  security_smart_home: [
+    'cctv', 'camera', 'electric fence', 'alarm', 'intercom', 'smart lock', 'wifi', 'doorbell',
+  ],
+  moving_heavy_work: [
+    'moving', 'truck', 'junk', 'rubble', 'haulage', 'lifting', 'offloading',
+  ],
+  general_handyman: [
+    'handyman', 'tv mount', 'mirror hanging', 'curtain rail', 'odd jobs', 'minor fix',
+  ],
+  vehicle_adjacent: [
+    'car wash', 'mobile mechanic', 'jumpstart', 'tyre change', 'battery',
+  ],
+  // Legacy aliases
+  pop_ceilings: ['pop', 'ceiling', 'plaster', 'gypsum'],
+  painting: ['paint', 'wall', 'color', 'brush'],
+  tiling: ['tile', 'tiling', 'floor', 'grout'],
+  ac_refrigeration: ['ac', 'cooling', 'fridge'],
 };
 
 // Calculate approximate straight-line distance in km between two Accra coordinates
