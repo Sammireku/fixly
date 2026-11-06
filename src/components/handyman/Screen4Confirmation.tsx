@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Bell,
   Briefcase,
@@ -7,15 +7,29 @@ import {
   Clock,
   ShieldCheck,
   Lock,
+  Radio,
+  Smartphone,
+  MessageSquare,
+  ChevronRight,
+  Check,
+  Zap,
+  CornerDownRight,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId, BookingState } from './types';
 import { GhanaCardBadge } from './GhanaCardBadge';
+import {
+  autoDispatchJobBroadcastIfOptedIn,
+  getArtisanBroadcastPreference,
+  simulateArtisanSmsReply,
+  JobBroadcastRecord,
+} from '../../lib/smsWhatsappService';
 
 interface Screen4ConfirmationProps {
   booking?: BookingState;
   onEditBooking?: () => void;
   onOpenNotifications?: () => void;
+  onOpenBroadcastCenter?: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
@@ -25,8 +39,8 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
     proName: 'Marcus Kim',
     proInitials: 'MK',
     duration: '2 hours',
-    address: '123 Oak Street, Austin, TX 78701',
-    paymentMethod: 'Visa ending in 4242',
+    address: 'East Legon (GA-492-3841), Accra',
+    paymentMethod: 'MTN MoMo (+233 24 412 8891)',
     total: 120.0,
     escrowAmount: 120.0,
     arrivalWindow: '10:30 AM – 11:30 AM',
@@ -36,8 +50,73 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
   },
   onEditBooking,
   onOpenNotifications,
+  onOpenBroadcastCenter,
   onTabChange,
 }) => {
+  const [autoDispatchStatus, setAutoDispatchStatus] = useState<{
+    dispatched: boolean;
+    record?: JobBroadcastRecord;
+    reason?: string;
+  }>({ dispatched: false });
+
+  const [simulatedReply, setSimulatedReply] = useState<string | null>(null);
+
+  // AUTOMATIC BROADCAST TRIGGER:
+  // When booking confirms, automatically dispatch 2G SMS / WhatsApp broadcast
+  // if artisan has opted in for this service/trade.
+  useEffect(() => {
+    const syntheticJob = {
+      id: `bkg-${booking.serviceName.toLowerCase().replace(/\s+/g, '-')}-001`,
+      clientId: 'client-maya',
+      clientName: 'Maya Johnson',
+      clientPhone: '+233 24 412 8891',
+      trade: 'plumbing' as const,
+      type: 'on_demand' as const,
+      title: booking.serviceName,
+      description: `Visit by ${booking.proName} at ${booking.address}`,
+      urgency: 'now' as const,
+      status: 'requested' as const,
+      basePrice: booking.total,
+      protectionFee: 6.0,
+      totalAmount: booking.total,
+      platformFee: 15.0,
+      poolFee: 3.0,
+      netProEarnings: booking.total - 18,
+      location: {
+        lat: 5.6354,
+        lng: -0.1582,
+        address: booking.address,
+        ghanaPostGps: 'GA-492-3841',
+        landmark: 'American House / A&C Mall',
+        area: 'East Legon',
+      },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const res = autoDispatchJobBroadcastIfOptedIn(
+      syntheticJob,
+      booking.proName,
+      '+233 24 551 8840'
+    );
+    setAutoDispatchStatus(res);
+  }, [booking]);
+
+  const handleSimulateReply = (keyword: 'YES' | 'NO') => {
+    if (autoDispatchStatus.record) {
+      const updated = simulateArtisanSmsReply(autoDispatchStatus.record.id, keyword);
+      if (updated) {
+        setAutoDispatchStatus((prev) => ({ ...prev, record: updated }));
+        setSimulatedReply(
+          `Artisan replied "${keyword}" via 2G SMS Shortcode. Status: ${updated.status}`
+        );
+        setTimeout(() => setSimulatedReply(null), 4000);
+      }
+    }
+  };
+
+  const pref = getArtisanBroadcastPreference();
+
   return (
     <div className="flex flex-col h-full bg-[#F4F5F8] text-slate-900 select-none">
       {/* Scrollable Content */}
@@ -113,7 +192,7 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
           {/* Escrow Banner Note */}
           <div className="p-2.5 bg-blue-50/70 border border-blue-200/70 rounded-xl flex items-center gap-2 text-[11px] text-blue-900">
             <Lock className="w-3.5 h-3.5 text-[#1E5BF0] shrink-0" />
-            <span>${booking.total.toFixed(2)} held safely in Fixly Escrow until your sign-off</span>
+            <span>GH₵{booking.total.toFixed(2)} held safely in Fixly Escrow until your sign-off</span>
           </div>
 
           {/* Divider & Total */}
@@ -122,9 +201,120 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
               Estimated total
             </span>
             <span className="text-base font-extrabold text-slate-900 tracking-tight">
-              ${booking.total.toFixed(2)}
+              GH₵{booking.total.toFixed(2)}
             </span>
           </div>
+        </div>
+
+        {/* AUTOMATED ARTISAN 2G BROADCAST CARD (OPT-IN TRIGGERED) */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-xl bg-blue-50 text-[#1E5BF0] flex items-center justify-center shrink-0">
+                <Radio className="w-4 h-4 animate-pulse" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">
+                  Automated 2G SMS Dispatch
+                </h4>
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Triggered because artisan opted into offline broadcast
+                </span>
+              </div>
+            </div>
+
+            <span
+              className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                pref.optedIn
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}
+            >
+              {pref.optedIn ? 'AUTO-DISPATCHED' : 'OPTED OUT'}
+            </span>
+          </div>
+
+          {pref.optedIn ? (
+            <>
+              <div className="p-2.5 bg-blue-50/60 rounded-xl border border-blue-100 text-xs space-y-1.5">
+                <div className="flex items-center gap-1.5 text-blue-900 font-bold">
+                  <Zap className="w-3.5 h-3.5 text-amber-500" />
+                  <span>Artisan {booking.proName} Opt-In Active ({pref.channel})</span>
+                </div>
+                <p className="text-[11px] text-blue-800 leading-snug">
+                  An automated 2G SMS alert was immediately transmitted to {pref.phone} via Telco Shortcode 1400. The artisan can accept by texting "{autoDispatchStatus.record?.smsReplyCode || 'YES'}" without needing internet access.
+                </p>
+              </div>
+
+              {/* Message preview snippet */}
+              {autoDispatchStatus.record && (
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-[11px] font-mono text-slate-800 leading-relaxed">
+                  <strong>Beamed via SMS Shortcode 1400:</strong>
+                  <div className="mt-1 whitespace-pre-wrap text-slate-700">
+                    {autoDispatchStatus.record.messageText}
+                  </div>
+                </div>
+              )}
+
+              {/* Inbound Reply Status */}
+              {autoDispatchStatus.record?.artisanReply && (
+                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900">
+                  <div className="flex items-center gap-1.5">
+                    <CornerDownRight className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>
+                      <strong>Artisan Inbound SMS:</strong> {autoDispatchStatus.record.artisanReply}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded">
+                    {autoDispatchStatus.record.status.toUpperCase()}
+                  </span>
+                </div>
+              )}
+
+              {/* Reply Simulator Trigger */}
+              <div className="pt-1 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500">Test Artisan SMS:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleSimulateReply('YES')}
+                    className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg cursor-pointer transition-colors shadow-2xs"
+                  >
+                    Simulate "YES"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSimulateReply('NO')}
+                    className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] rounded-lg cursor-pointer transition-colors shadow-2xs"
+                  >
+                    Simulate "NO"
+                  </button>
+                </div>
+
+                {onOpenBroadcastCenter && (
+                  <button
+                    type="button"
+                    onClick={onOpenBroadcastCenter}
+                    className="text-[11px] font-bold text-[#1E5BF0] hover:underline flex items-center gap-0.5 cursor-pointer"
+                  >
+                    <span>Broadcast Logs</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+
+              {simulatedReply && (
+                <div className="p-2 bg-emerald-100/70 text-emerald-950 rounded-lg text-[11px] font-medium flex items-center gap-1.5">
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  <span>{simulatedReply}</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
+              This artisan has disabled automated 2G broadcasts and relies exclusively on in-app notifications.
+            </div>
+          )}
         </div>
 
         {/* Booking Details Section */}
@@ -203,3 +393,5 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
     </div>
   );
 };
+
+

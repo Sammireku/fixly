@@ -31,12 +31,14 @@ import { ArtisanMapView } from '../map/ArtisanMapView';
 import { OpsConsole } from '../ops/OpsConsole';
 import { VoiceToTextRecorder } from '../VoiceToTextRecorder';
 import { JobChatModal } from '../chat/JobChatModal';
+import { SmsWhatsappNotificationCenter } from '../common/SmsWhatsappNotificationCenter';
 import { INITIAL_PROS, INITIAL_SAMPLE_JOBS } from '../../data/catalog';
 import { X, Mic } from 'lucide-react';
 
 export const HandymanApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('home');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [broadcastCenterOpen, setBroadcastCenterOpen] = useState(false);
   const [profileSettingsOpen, setProfileSettingsOpen] = useState(false);
   const [bookingHistoryOpen, setBookingHistoryOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -311,6 +313,7 @@ export const HandymanApp: React.FC = () => {
             booking={booking}
             onEditBooking={() => setCurrentScreen('pros')}
             onOpenNotifications={() => setNotificationsOpen(true)}
+            onOpenBroadcastCenter={() => setBroadcastCenterOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -354,6 +357,7 @@ export const HandymanApp: React.FC = () => {
       <NotificationDrawer
         isOpen={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
+        onOpenBroadcastCenter={() => setBroadcastCenterOpen(true)}
       />
 
       {/* 2. Profile Settings & Mini Dashboard Modal */}
@@ -530,6 +534,12 @@ export const HandymanApp: React.FC = () => {
         job={activeChatJob}
         isOpen={chatModalOpen}
         onClose={() => setChatModalOpen(false)}
+      />
+
+      {/* 14. ARTISAN OFFLINE SMS & WHATSAPP BROADCAST CENTER */}
+      <SmsWhatsappNotificationCenter
+        isOpen={broadcastCenterOpen}
+        onClose={() => setBroadcastCenterOpen(false)}
       />
     </div>
   );

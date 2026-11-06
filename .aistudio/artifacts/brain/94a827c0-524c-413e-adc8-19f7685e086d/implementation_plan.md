@@ -209,9 +209,31 @@ Fixly is a location-based home services marketplace in Ghana connecting homeowne
    - 1-tap SOS trigger with silent alarm option, live GPS coordinates display, and emergency contacts.
    - Case evidence viewer with side-by-side before/after photo inspection, chat transcripts, and escrow release/refund buttons.
 
+## 5. Recent Feature Additions & Platform Enhancements
+
+- **Role-Based Admin Console & Discrete Redirection**:
+  - Operations Tower made strictly role-based: public pill removed from public client view.
+  - Automatic redirection on login for `admin@fixlygh.com` with secure password authentication.
+  - Dedicated operational hubs: Active Dispute Tickets & Claims Waterfall, Auditing Failed Ghana Card Uploads, Pro Claim Limits & Guarantors, Manual Escrow Releases & Overrides, and Live SOS Distress Beacons.
+- **Offline Artisan Broadcast (2G SMS Shortcode 1400 & WhatsApp wa.me)**:
+  - Supports Ghanaian artisans with low or zero continuous internet access.
+  - Automated 2G SMS broadcasts with interactive two-way shortcode replies (`Reply YES [JobCode] to accept or NO [JobCode] to pass via free SMS`).
+  - Interactive simulator in the Artisan Broadcast Center to test incoming artisan SMS replies.
+  - Direct `wa.me` WhatsApp links with preformatted job details, GhanaPost GPS codes, and escrow budget amounts.
+  - Active broadcast indicator and dispatch status drawer accessible directly from the booking confirmation screen (`Screen4Confirmation.tsx`) and notifications drawer (`NotificationDrawer.tsx`).
+- **Platform & Escrow FAQ in Profile Settings (`ProfileSettingsModal.tsx`)**:
+  - Segmented tab toggle between **Profile Information** and **Platform & Escrow FAQ**.
+  - Searchable accordion covering Fixly escrow protection, payout schedules, 24-hour service guarantee, free rework policy, 2G SMS offline artisan alerts, Ghana Card biometric verification, supported payment methods, dispute handling, and referral bonuses.
+  - Category filter chips (*All FAQs*, *Escrow & Money*, *24-Hr Guarantee*, *Ghana Card & Safety*, *Offline 2G Broadcast*).
+- **'Manage Payment Methods' Section in Wallet Screen (`Screen6Wallet.tsx`)**:
+  - State-backed payment methods list supporting Ghanaian Mobile Money (MTN MoMo, Telecel/Vodafone Cash, AT Money) and Bank Cards (Visa, Mastercard, Gh-Link).
+  - 1-click "Set as Default" toggle with visual `DEFAULT` badge.
+  - "+ Add Method" modal with interactive tabs for Mobile Money (network selector, phone number validation, registered name) and Cards (network, 16-digit card number, MM/YY expiry, CVV, cardholder name).
+  - Edit and delete actions with safety confirmations and feedback notifications.
+
 ---
 
-## 5. Verification & Testing Strategy
+## 6. Verification & Testing Strategy
 
 - **Build Verification**: Run `compile_applet` and verify zero TypeScript, Vite, or Tailwind CSS compilation errors.
 - **Workflow Testing**:
@@ -219,3 +241,7 @@ Fixly is a location-based home services marketplace in Ghana connecting homeowne
   - Test project booking with multi-milestone payments.
   - Disconnect network using Network Simulator -> perform status update and quote submission -> observe items buffering in the Sync Queue -> reconnect to Online -> confirm automatic queue flush and Firestore state synchronization.
   - Test language toggling across English, Twi, and Ga, ensuring all primary labels, buttons, and voice prompts execute seamlessly.
+  - Test artisan 2G SMS and WhatsApp broadcast simulation, including receiving inbound `YES [ID]` reply codes.
+  - Test FAQ search and category filtering in Profile Settings.
+  - Test adding, editing, and deleting payment methods (MTN MoMo, Telecel Cash, Visa) in the Wallet tab.
+

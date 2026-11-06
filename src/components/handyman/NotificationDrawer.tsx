@@ -1,17 +1,30 @@
 import React from 'react';
-import { Bell, X, CheckCircle2, Tag, Wallet } from 'lucide-react';
+import { Bell, X, CheckCircle2, Tag, Wallet, Radio, ChevronRight } from 'lucide-react';
 
 interface NotificationDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpenBroadcastCenter?: () => void;
 }
 
-export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, onClose }) => {
+export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
+  isOpen,
+  onClose,
+  onOpenBroadcastCenter,
+}) => {
   if (!isOpen) return null;
 
   const notifications = [
     {
       id: '1',
+      title: 'Artisan 2G Broadcast Sent',
+      message: 'Job request sent via 2G SMS Shortcode (1400) & WhatsApp to plumbers in East Legon.',
+      time: 'Just now',
+      icon: Radio,
+      color: 'text-blue-600 bg-blue-50',
+    },
+    {
+      id: '2',
       title: 'Booking Confirmed',
       message: 'Marcus Kim confirmed your Handyman visit for Today at 10:30 AM.',
       time: '10m ago',
@@ -19,17 +32,17 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
       color: 'text-emerald-600 bg-emerald-50',
     },
     {
-      id: '2',
+      id: '3',
       title: 'Special Promo Active',
-      message: 'Get 20% off your first home service with code NEW20.',
+      message: 'Get GH₵25 credit when you invite neighbors using your referral code.',
       time: '1h ago',
       icon: Tag,
-      color: 'text-blue-600 bg-blue-50',
+      color: 'text-amber-600 bg-amber-50',
     },
     {
-      id: '3',
-      title: 'Wallet Balance Updated',
-      message: 'Available cash balance is ready for service deposits and tips.',
+      id: '4',
+      title: 'Wallet Balance Pre-Funded',
+      message: 'GH₵250.00 pre-authorized for Escrow lock upon artisan arrival.',
       time: 'Yesterday',
       icon: Wallet,
       color: 'text-purple-600 bg-purple-50',
@@ -54,7 +67,33 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
           </button>
         </div>
 
-        <div className="space-y-2.5">
+        {/* Shortcut to Artisan SMS & WhatsApp Broadcast Center */}
+        {onOpenBroadcastCenter && (
+          <div
+            onClick={() => {
+              onClose();
+              onOpenBroadcastCenter();
+            }}
+            className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl flex items-center justify-between cursor-pointer hover:border-blue-400 transition-all group"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#1E5BF0] text-white flex items-center justify-center shrink-0">
+                <Radio className="w-4 h-4 animate-pulse" />
+              </div>
+              <div>
+                <span className="text-xs font-bold text-slate-900 block">
+                  Artisan SMS/WhatsApp Gateway
+                </span>
+                <span className="text-[10px] text-blue-600 font-medium">
+                  Dispatch 2G SMS & simulate replies
+                </span>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#1E5BF0] group-hover:translate-x-0.5 transition-transform" />
+          </div>
+        )}
+
+        <div className="space-y-2.5 max-h-60 overflow-y-auto">
           {notifications.map((n) => {
             const Icon = n.icon;
             return (
@@ -81,7 +120,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
 
         <button
           onClick={onClose}
-          className="w-full py-2.5 bg-[#1E5BF0] hover:bg-blue-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-xs transition-colors"
+          className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl cursor-pointer shadow-xs transition-colors"
         >
           Close
         </button>
@@ -89,3 +128,4 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
     </div>
   );
 };
+

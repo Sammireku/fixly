@@ -15,10 +15,17 @@ import {
   ArrowRight,
   Briefcase,
   UserCheck,
+  Radio,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId, UserProfile, ProProfileDetails } from './types';
 import { GhanaCardBadge } from './GhanaCardBadge';
+import {
+  getArtisanBroadcastPreference,
+  saveArtisanBroadcastPreference,
+  broadcastJobRequestToArtisan,
+  ArtisanBroadcastPreference,
+} from '../../lib/smsWhatsappService';
 
 interface ProProfileScreenProps {
   userProfile: UserProfile;
@@ -40,6 +47,70 @@ export const ProProfileScreen: React.FC<ProProfileScreenProps> = ({
   const [isOnline, setIsOnline] = useState<boolean>(proProfile.isOnline ?? true);
   const [cashoutAmount, setCashoutAmount] = useState<string>('150');
   const [cashoutSuccess, setCashoutSuccess] = useState<boolean>(false);
+  const [broadcastPref, setBroadcastPref] = useState<ArtisanBroadcastPreference>(
+    getArtisanBroadcastPreference()
+  );
+  const [testBroadcastSent, setTestBroadcastSent] = useState(false);
+
+  const handleToggleBroadcastOptIn = () => {
+    const updated = { ...broadcastPref, optedIn: !broadcastPref.optedIn };
+    setBroadcastPref(updated);
+    saveArtisanBroadcastPreference(updated);
+  };
+
+  const handleUpdateChannel = (ch: 'SMS' | 'WhatsApp' | 'Both') => {
+    const updated = { ...broadcastPref, channel: ch };
+    setBroadcastPref(updated);
+    saveArtisanBroadcastPreference(updated);
+  };
+
+  const handleToggleService = (srv: string) => {
+    const exists = broadcastPref.optedServices.includes(srv);
+    const updatedServices = exists
+      ? broadcastPref.optedServices.filter((s) => s !== srv)
+      : [...broadcastPref.optedServices, srv];
+    const updated = { ...broadcastPref, optedServices: updatedServices };
+    setBroadcastPref(updated);
+    saveArtisanBroadcastPreference(updated);
+  };
+
+  const handleSendTestBroadcast = () => {
+    broadcastJobRequestToArtisan(
+      {
+        id: `test-${Date.now()}`,
+        clientId: 'client-test',
+        clientName: 'Nana Osei (Test Alert)',
+        clientPhone: '+233 24 491 0029',
+        trade: 'plumbing',
+        type: 'on_demand',
+        title: 'Emergency Tap Leak Diagnostic (Test)',
+        description: 'Testing 2G SMS Shortcode Broadcast',
+        urgency: 'now',
+        status: 'requested',
+        basePrice: 90,
+        protectionFee: 4.5,
+        totalAmount: 94.5,
+        platformFee: 10,
+        poolFee: 2.5,
+        netProEarnings: 82,
+        location: {
+          lat: 5.6354,
+          lng: -0.1582,
+          address: '42 Cantonments Road, Accra',
+          ghanaPostGps: 'GA-014-9912',
+          landmark: 'US Embassy Junction',
+          area: 'Cantonments',
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      broadcastPref.channel === 'Both' ? 'SMS' : broadcastPref.channel,
+      userProfile.name,
+      broadcastPref.phone
+    );
+    setTestBroadcastSent(true);
+    setTimeout(() => setTestBroadcastSent(false), 4000);
+  };
 
   // Incoming Job Dispatch simulation
   const [assignedJob, setAssignedJob] = useState<{
@@ -134,7 +205,7 @@ export const ProProfileScreen: React.FC<ProProfileScreenProps> = ({
                 </span>
               </div>
               <span className="text-xs text-slate-400 block mt-0.5">
-                ${proProfile.hourlyRate}/hr • {proProfile.experienceYears} yrs experience
+                GH₵{proProfile.hourlyRate}/hr • {proProfile.experienceYears} yrs experience
               </span>
             </div>
           </div>
@@ -157,6 +228,125 @@ export const ProProfileScreen: React.FC<ProProfileScreenProps> = ({
           </button>
         </div>
 
+        {/* ARTISAN OFFLINE BROADCAST OPT-IN SETTINGS CARD */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1E5BF0] flex items-center justify-center shrink-0">
+                <Radio className="w-4 h-4 animate-pulse text-[#1E5BF0]" />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900">
+                  Automated 2G SMS & WhatsApp Broadcast
+                </h4>
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Receive job alerts when offline or in low-data areas
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleToggleBroadcastOptIn}
+              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                broadcastPref.optedIn
+                  ? 'bg-emerald-600 text-white shadow-2xs'
+                  : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+              }`}
+            >
+              {broadcastPref.optedIn ? 'OPTED IN' : 'OPTED OUT'}
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-600 leading-relaxed">
+            {broadcastPref.optedIn
+              ? '✅ ACTIVE: Fixly will automatically dispatch incoming jobs in your trade to your phone via 2G SMS Shortcode (1400) and WhatsApp, even if you do not have mobile data turned on.'
+              : '⚠️ PAUSED: You will only receive jobs when actively online in the app. Opt-in to receive free SMS alerts on site.'}
+          </p>
+
+          {broadcastPref.optedIn && (
+            <div className="space-y-3 pt-1 border-t border-slate-100">
+              {/* Channel Selector */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  Preferred Automated Dispatch Channel:
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(['SMS', 'WhatsApp', 'Both'] as const).map((ch) => (
+                    <button
+                      key={ch}
+                      type="button"
+                      onClick={() => handleUpdateChannel(ch)}
+                      className={`py-1.5 px-2 rounded-xl text-[11px] font-bold border transition-all cursor-pointer text-center ${
+                        broadcastPref.channel === ch
+                          ? 'border-[#1E5BF0] bg-blue-50 text-[#1E5BF0] ring-1 ring-blue-500'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {ch === 'Both' ? 'SMS + WhatsApp' : ch === 'SMS' ? '2G SMS Only' : 'WhatsApp'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Opted-in Services */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                  Services Opted-In for Instant Auto-Dispatch:
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {[
+                    'Leak repair',
+                    'Tap & mixer replacement',
+                    'Toilet repair',
+                    'Water heaters',
+                    'Polytank & booster pump',
+                  ].map((srv) => {
+                    const isChecked = broadcastPref.optedServices.includes(srv);
+                    return (
+                      <button
+                        key={srv}
+                        type="button"
+                        onClick={() => handleToggleService(srv)}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer flex items-center gap-1 ${
+                          isChecked
+                            ? 'bg-blue-50 border-blue-300 text-[#1E5BF0]'
+                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100'
+                        }`}
+                      >
+                        {isChecked && <Check className="w-3 h-3 stroke-[2.5]" />}
+                        <span>{srv}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Destination phone & test trigger */}
+              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center justify-between flex-wrap gap-2">
+                <div className="text-[11px] text-slate-600 font-mono">
+                  Dispatch Line: <strong>{broadcastPref.phone}</strong> (Shortcode 1400)
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSendTestBroadcast}
+                  className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg cursor-pointer transition-colors"
+                >
+                  Send Test 2G Alert
+                </button>
+              </div>
+
+              {testBroadcastSent && (
+                <div className="p-2 bg-emerald-50 text-emerald-900 border border-emerald-200 rounded-xl text-xs font-bold flex items-center gap-1.5 animate-fade-in">
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Test 2G SMS Alert dispatched to {broadcastPref.phone}!</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Active Incoming Job Request */}
         {assignedJob && (
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 border border-slate-700 shadow-md space-y-3 animate-fade-in">
@@ -166,7 +356,7 @@ export const ProProfileScreen: React.FC<ProProfileScreenProps> = ({
                 <span>New Job Dispatch</span>
               </span>
               <span className="text-xs font-mono font-extrabold text-emerald-400">
-                +${assignedJob.payout.toFixed(2)} Net Payout
+                +GH₵{assignedJob.payout.toFixed(2)} Net Payout
               </span>
             </div>
 
