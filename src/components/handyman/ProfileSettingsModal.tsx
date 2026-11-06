@@ -4,7 +4,6 @@ import {
   Camera,
   ShieldCheck,
   Check,
-  DollarSign,
   Lock,
   CalendarCheck,
   MapPin,

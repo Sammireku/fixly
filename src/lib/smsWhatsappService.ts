@@ -364,6 +364,24 @@ export function simulateArtisanSmsReply(
 
   records[idx] = updatedRecord;
   saveBroadcastRecords(records);
+
+  // Trigger real-time browser/mobile push alert if artisan accepted
+  if (replyKeyword === 'YES' || replyKeyword === 'START') {
+    try {
+      // Dynamic import to prevent circular dependency
+      import('./fcmNotifications').then(({ triggerArtisanAcceptedPush }) => {
+        triggerArtisanAcceptedPush(
+          current.jobId || current.id,
+          current.jobTitle,
+          current.recipientName,
+          `${current.locationAddress} (${current.ghanaPostGps})`
+        );
+      });
+    } catch (e) {
+      console.warn('Push alert dispatch error:', e);
+    }
+  }
+
   return updatedRecord;
 }
 

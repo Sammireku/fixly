@@ -11,6 +11,9 @@ Fixly is a location-based home services marketplace in Ghana connecting homeowne
 - **Multilingual Support & Voice Guidance**: Native three-language support covering **English**, **Twi (Akan)**, and **Ga**, equipped with spoken voice note synthesis/audio playback prompts for non-technical artisans and low-literacy trade environments.
 - **Offline Reliability & Sync Handling**: Integrated offline simulation toggle accompanied by an interactive **Offline Sync Queue Drawer**, visual status banners (Online, Patchy/2G, Offline), local optimistic state caching, and queued mutation resolution upon reconnect.
 - **Payment & Escrow Architecture**: Mobile Money (MTN MoMo, Telecel Cash, AT Money) integration model with 24–48h post-job escrow holds for on-demand repairs and milestone-staged escrow releases for multi-day renovation projects.
+- **Default App Currency**: Strictly configured to **Ghana Cedi (`GH₵`)** across all catalog prices, Pro card listings (`GH₵{pro.hourlyRate}/hr`), search filters, wallet balances, escrow milestone contracts, and quote summaries.
+- **Mock Push Notification Service**: OS/browser-level push alerts triggering when an artisan accepts a job or an escrow update occurs, even when the browser tab is minimized or in the background (`document.hidden`), with document title flashing, Web Audio chimes, mobile vibration, and interactive 3-second test countdowns.
+- **Plan a Project Feature**: Dedicated 3-step project renovation planner (`ProjectPlannerModal.tsx`) with room sizing, finish grades, site photo/blueprint uploads, diagnostic site inspection scheduling, itemized quotes (materials vs. labor breakdown), and 40/40/20 milestone escrow protection with photo proof sign-offs.
 
 ---
 

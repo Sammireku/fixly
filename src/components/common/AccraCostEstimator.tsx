@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { ACCRA_AREAS, SERVICE_CATALOG } from '../../data/catalog';
 import { CatalogServiceItem, TradeType } from '../../types';
+import { formatCurrency } from '../../lib/currency';
 import {
   Calculator,
   MapPin,
@@ -9,7 +10,6 @@ import {
   CheckCircle2,
   ArrowRight,
   Info,
-  DollarSign,
   Sparkles,
   Layers,
   ChevronRight,
@@ -197,14 +197,14 @@ export const AccraCostEstimator: React.FC<AccraCostEstimatorProps> = ({
           </div>
         </div>
 
-        {/* Area selection */}
-        <div className="flex items-center gap-2 bg-[#0B132B] border border-[#1E2B4D] rounded-xl px-3 py-1.5 self-start sm:self-auto text-xs">
+        {/* Area selection with wrapping and max-width bounds to prevent container overlap */}
+        <div className="flex flex-wrap items-center gap-2 bg-[#0B132B] border border-[#1E2B4D] rounded-xl px-3 py-1.5 self-start sm:self-auto text-xs max-w-full min-w-0 overflow-hidden">
           <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-          <span className="text-slate-400 font-medium">Zone:</span>
+          <span className="text-slate-400 font-medium shrink-0">Zone:</span>
           <select
             value={selectedAreaName}
             onChange={(e) => setSelectedAreaName(e.target.value)}
-            className="bg-transparent font-bold text-white focus:outline-none cursor-pointer"
+            className="bg-transparent font-bold text-white focus:outline-none cursor-pointer max-w-full min-w-0 truncate"
           >
             {ACCRA_AREAS.map((a) => (
               <option key={a.name} value={a.name} className="bg-[#0B132B] text-white">
@@ -285,7 +285,7 @@ export const AccraCostEstimator: React.FC<AccraCostEstimatorProps> = ({
             </span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-3xl font-black font-mono text-white tracking-tight">
-                GH₵ {totalMin} - {totalMax}
+                {formatCurrency(totalMin)} - {formatCurrency(totalMax)}
               </span>
               <span className="text-xs text-slate-400 font-mono">
                 (~{benchmark.typicalDuration})
@@ -312,27 +312,27 @@ export const AccraCostEstimator: React.FC<AccraCostEstimatorProps> = ({
         <div className="mt-4 pt-4 border-t border-[#1E2B4D] grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
           <div className="bg-[#131D38] p-2.5 rounded-xl border border-[#1E2B4D]">
             <span className="text-[10px] text-slate-400 block font-bold uppercase">1. Call-Out & Diag.</span>
-            <span className="font-mono font-bold text-white">GH₵ {benchmark.diagnosticFee}</span>
+            <span className="font-mono font-bold text-white">{formatCurrency(benchmark.diagnosticFee)}</span>
             <span className="text-[9px] text-slate-500 block">Deducted on job accept</span>
           </div>
 
           <div className="bg-[#131D38] p-2.5 rounded-xl border border-[#1E2B4D]">
             <span className="text-[10px] text-slate-400 block font-bold uppercase">2. Skilled Labor</span>
-            <span className="font-mono font-bold text-white">GH₵ {estimatedLaborMin} - {estimatedLaborMax}</span>
+            <span className="font-mono font-bold text-white">{formatCurrency(estimatedLaborMin)} - {formatCurrency(estimatedLaborMax)}</span>
             <span className="text-[9px] text-slate-500 block">Fair Accra artisan wage</span>
           </div>
 
           <div className="bg-[#131D38] p-2.5 rounded-xl border border-[#1E2B4D]">
             <span className="text-[10px] text-slate-400 block font-bold uppercase">3. Parts & Consumables</span>
             <span className="font-mono font-bold text-white">
-              {includeParts ? `GH₵ ${estimatedPartsMin} - ${estimatedPartsMax}` : 'None (Client supplies)'}
+              {includeParts ? `${formatCurrency(estimatedPartsMin)} - ${formatCurrency(estimatedPartsMax)}` : 'None (Client supplies)'}
             </span>
             <span className="text-[9px] text-slate-500 block">Opera Square/Abossey Okai index</span>
           </div>
 
           <div className="bg-[#131D38] p-2.5 rounded-xl border border-[#1E2B4D]">
             <span className="text-[10px] text-slate-400 block font-bold uppercase">4. Escrow Protection</span>
-            <span className="font-mono font-bold text-emerald-400">Included (~GH₵ {escrowCover})</span>
+            <span className="font-mono font-bold text-emerald-400">Included (~{formatCurrency(escrowCover)})</span>
             <span className="text-[9px] text-emerald-500/80 block">Dispute waterfall backed</span>
           </div>
         </div>

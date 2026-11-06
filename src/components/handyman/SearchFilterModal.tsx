@@ -7,7 +7,7 @@ import {
   CheckCircle2,
   ShieldCheck,
   Award,
-  DollarSign,
+  Banknote,
   RotateCcw,
 } from 'lucide-react';
 import { FilterState } from './types';
@@ -222,10 +222,10 @@ export const SearchFilterModal: React.FC<SearchFilterModalProps> = ({
           <div>
             <div className="flex items-center justify-between text-xs font-bold text-slate-800 mb-2">
               <span className="flex items-center gap-1.5">
-                <DollarSign className="w-3.5 h-3.5 text-slate-600" />
+                <Banknote className="w-3.5 h-3.5 text-slate-600" />
                 Maximum Rate / Hour
               </span>
-              <span className="font-extrabold text-slate-900">${maxRate}/hr</span>
+              <span className="font-extrabold text-slate-900">GH₵{maxRate}/hr</span>
             </div>
             <input
               type="range"

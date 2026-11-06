@@ -3,7 +3,6 @@ import {
   Bell,
   Wrench,
   CheckCircle2,
-  DollarSign,
   Clock,
   Award,
   ChevronRight,

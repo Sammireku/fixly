@@ -15,9 +15,15 @@ import {
   Building2,
   AlertCircle,
   Star,
+  Camera,
+  Coins,
+  Sparkles,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId } from './types';
+import { triggerEscrowUpdatePush } from '../../lib/fcmNotifications';
+import { formatCurrency } from '../../lib/currency';
+import { CurrencyConverter } from '../common/CurrencyConverter';
 
 export interface WalletPaymentMethod {
   id: string;
@@ -45,6 +51,20 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
   const [selectedFund, setSelectedFund] = useState<number | null>(null);
   const [justAddedAmount, setJustAddedAmount] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [milestone1Released, setMilestone1Released] = useState(false);
+  const [showFxConverterModal, setShowFxConverterModal] = useState(false);
+
+  const handleReleaseMilestone = async () => {
+    setMilestone1Released(true);
+    showToast(`Milestone 1 (${formatCurrency(1430)}) released to artisan MoMo!`);
+    await triggerEscrowUpdatePush(
+      'escrow_milestone_released',
+      1430,
+      'Milestone 1: Surface Prep & Framing (40%)',
+      'PRJ-302',
+      'POP False Ceiling Renovation'
+    );
+  };
 
   // Saved Payment Methods State
   const [paymentMethods, setPaymentMethods] = useState<WalletPaymentMethod[]>([
@@ -103,7 +123,7 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
     setSelectedFund(amt);
     setBalance((prev) => prev + amt);
     setJustAddedAmount(amt);
-    showToast(`Added GH₵${amt.toFixed(2)} to Fixly Wallet via Default Payment Method`);
+    showToast(`Added ${formatCurrency(amt)} to Fixly Wallet via Default Payment Method`);
     setTimeout(() => {
       setJustAddedAmount(null);
     }, 2200);
@@ -289,14 +309,21 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
             <span className="text-xs text-blue-100 font-medium tracking-tight">
               Available Escrow Wallet
             </span>
-            <span className="bg-white/20 text-white font-bold text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-xs">
-              MOMO & CARD PRE-FUNDED
-            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setShowFxConverterModal(true)}
+                className="bg-white/20 hover:bg-white/30 text-white font-bold text-[9px] px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-xs flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                <span>USD ↔ GHS FX Calculator</span>
+              </button>
+            </div>
           </div>
 
           <div className="pt-1">
             <h2 className="text-3xl font-extrabold text-white tracking-tight">
-              GH₵{balance.toFixed(2)}
+              {formatCurrency(balance)}
             </h2>
             <p className="text-[11px] text-blue-100 font-normal mt-1 tracking-tight">
               Instant authorization for artisan visits & quote approvals
@@ -306,9 +333,95 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
           {justAddedAmount && (
             <div className="absolute right-4 bottom-3 bg-emerald-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full animate-fade-in flex items-center gap-1 shadow-sm">
               <Check className="w-3 h-3" />
-              <span>+GH₵{justAddedAmount.toFixed(2)} Added!</span>
+              <span>+{formatCurrency(justAddedAmount)} Added!</span>
             </div>
           )}
+        </div>
+
+        {/* SECTION: ACTIVE PROJECT ESCROW LOCKS & MILESTONES */}
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-purple-600" />
+                Active Project Escrow Locks (40/40/20)
+              </h3>
+              <span className="text-[11px] text-slate-400">
+                Staged funds held safely until your inspection & photo approval
+              </span>
+            </div>
+            <span className="text-[10px] font-mono font-extrabold bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">
+              {formatCurrency(1430)} Locked
+            </span>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-purple-200/90 p-4 shadow-xs space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full inline-block mb-1">
+                  Project #PRJ-302 • POP False Ceiling
+                </span>
+                <h4 className="text-xs font-bold text-slate-900">
+                  Living & Dining Hall (48 sqm)
+                </h4>
+                <span className="text-[11px] text-slate-500 block mt-0.5">
+                  Artisan: Joseph Boateng (⭐4.95 Elite Master • Ghana Card Verified)
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-bold text-slate-400 block">Milestone 1 of 3</span>
+                <span className="font-mono text-xs font-extrabold text-slate-900">{formatCurrency(1430)}</span>
+              </div>
+            </div>
+
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-slate-700">Stage 1: Surface Prep & Metal Framing</span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                  milestone1Released
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-amber-100 text-amber-800'
+                }`}>
+                  {milestone1Released ? 'Approved & Released' : 'Inspection Photos Ready'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200">
+                <span className="flex items-center gap-1">
+                  <Camera className="w-3.5 h-3.5 text-purple-600" />
+                  2 verified site photos uploaded
+                </span>
+                <span className="font-mono text-purple-700 font-bold">40% Payout</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between gap-2 pt-1">
+              {milestone1Released ? (
+                <div className="w-full py-2 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl text-center border border-emerald-200 flex items-center justify-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <span>Disbursed to Artisan MoMo (+233 24 551 8840)</span>
+                </div>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleReleaseMilestone}
+                    className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition-colors"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Approve & Release Milestone 1 ({formatCurrency(1430)})</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => showToast('Revision requested. Artisan notified via SMS.')}
+                    className="px-3 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold rounded-xl cursor-pointer transition-colors"
+                  >
+                    Request Snag Fix
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* SECTION: MANAGE PAYMENT METHODS */}
@@ -418,7 +531,7 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
                   className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors group"
                 >
                   <span className="text-xs font-semibold text-slate-800 tracking-tight">
-                    GH₵{amt.toFixed(2)}
+                    {formatCurrency(amt)}
                   </span>
                   <div
                     className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
@@ -455,7 +568,7 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white tracking-tight">
-              Invite friends & get GH₵25
+              Invite friends & get {formatCurrency(25)}
             </h3>
             <span className="bg-white/20 text-white font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-xs">
               INVITE CODE
@@ -463,7 +576,7 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
           </div>
 
           <p className="text-xs text-blue-100 font-medium mt-1 leading-snug">
-            Give GH₵25, Get GH₵25 wallet credit
+            Give {formatCurrency(25)}, Get {formatCurrency(25)} wallet credit
           </p>
 
           <p className="text-[10px] text-blue-200/90 font-normal mt-3 tracking-tight">
@@ -471,6 +584,19 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
           </p>
         </div>
       </div>
+
+      {/* FX CURRENCY CONVERTER MODAL */}
+      {showFxConverterModal && (
+        <CurrencyConverter
+          isOpen={showFxConverterModal}
+          onClose={() => setShowFxConverterModal(false)}
+          initialAmountUsd={50}
+          onSelectGhsAmount={(ghsAmt) => {
+            handleAddFund(Math.round(ghsAmt));
+            setShowFxConverterModal(false);
+          }}
+        />
+      )}
 
       {/* MODAL: ADD / EDIT PAYMENT METHOD */}
       {isAddEditModalOpen && (

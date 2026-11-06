@@ -24,6 +24,7 @@ import {
   simulateArtisanSmsReply,
   JobBroadcastRecord,
 } from '../../lib/smsWhatsappService';
+import { formatCurrency } from '../../lib/currency';
 
 interface Screen4ConfirmationProps {
   booking?: BookingState;
@@ -100,6 +101,17 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
       '+233 24 551 8840'
     );
     setAutoDispatchStatus(res);
+
+    // Trigger Escrow deposit alert
+    import('../../lib/fcmNotifications').then(({ triggerEscrowUpdatePush }) => {
+      triggerEscrowUpdatePush(
+        'escrow_funded',
+        booking.total || 120,
+        'Booking Escrow Deposit',
+        syntheticJob.id,
+        booking.serviceName
+      );
+    });
   }, [booking]);
 
   const handleSimulateReply = (keyword: 'YES' | 'NO') => {
@@ -110,6 +122,16 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
         setSimulatedReply(
           `Artisan replied "${keyword}" via 2G SMS Shortcode. Status: ${updated.status}`
         );
+        if (keyword === 'YES') {
+          import('../../lib/fcmNotifications').then(({ triggerArtisanAcceptedPush }) => {
+            triggerArtisanAcceptedPush(
+              updated.jobId || 'bkg-001',
+              booking.serviceName,
+              booking.proName,
+              booking.address
+            );
+          });
+        }
         setTimeout(() => setSimulatedReply(null), 4000);
       }
     }
@@ -192,7 +214,7 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
           {/* Escrow Banner Note */}
           <div className="p-2.5 bg-blue-50/70 border border-blue-200/70 rounded-xl flex items-center gap-2 text-[11px] text-blue-900">
             <Lock className="w-3.5 h-3.5 text-[#1E5BF0] shrink-0" />
-            <span>GH₵{booking.total.toFixed(2)} held safely in Fixly Escrow until your sign-off</span>
+            <span>{formatCurrency(booking.total)} held safely in Fixly Escrow until your sign-off</span>
           </div>
 
           {/* Divider & Total */}
@@ -201,7 +223,7 @@ export const Screen4Confirmation: React.FC<Screen4ConfirmationProps> = ({
               Estimated total
             </span>
             <span className="text-base font-extrabold text-slate-900 tracking-tight">
-              GH₵{booking.total.toFixed(2)}
+              {formatCurrency(booking.total)}
             </span>
           </div>
         </div>

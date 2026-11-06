@@ -8,7 +8,6 @@ import {
   HelpCircle,
   Check,
   Lock,
-  DollarSign,
   Camera,
   Wrench,
   Sparkles,

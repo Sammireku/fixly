@@ -32,6 +32,7 @@ import { OpsConsole } from '../ops/OpsConsole';
 import { VoiceToTextRecorder } from '../VoiceToTextRecorder';
 import { JobChatModal } from '../chat/JobChatModal';
 import { SmsWhatsappNotificationCenter } from '../common/SmsWhatsappNotificationCenter';
+import { ProjectPlannerModal } from './ProjectPlannerModal';
 import { INITIAL_PROS, INITIAL_SAMPLE_JOBS } from '../../data/catalog';
 import { X, Mic } from 'lucide-react';
 
@@ -55,6 +56,7 @@ export const HandymanApp: React.FC = () => {
   const [voiceSearchOpen, setVoiceSearchOpen] = useState(false);
   const [chatModalOpen, setChatModalOpen] = useState(false);
   const [activeChatJob, setActiveChatJob] = useState<Job>(INITIAL_SAMPLE_JOBS[0]);
+  const [projectPlannerOpen, setProjectPlannerOpen] = useState(false);
 
   // User Profile State with Mini Dashboard metrics & Ghana Card & Pro profile capability
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -287,6 +289,7 @@ export const HandymanApp: React.FC = () => {
             onOpenCostEstimator={() => setCostEstimatorOpen(true)}
             onOpenMapView={() => setMapViewOpen(true)}
             onOpenReferralModal={() => setReferralModalOpen(true)}
+            onOpenProjectPlanner={() => setProjectPlannerOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -295,6 +298,7 @@ export const HandymanApp: React.FC = () => {
           <Screen2Categories
             onSelectCategory={handleSelectCategory}
             onOpenNotifications={() => setNotificationsOpen(true)}
+            onOpenProjectPlanner={() => setProjectPlannerOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -540,6 +544,35 @@ export const HandymanApp: React.FC = () => {
       <SmsWhatsappNotificationCenter
         isOpen={broadcastCenterOpen}
         onClose={() => setBroadcastCenterOpen(false)}
+      />
+
+      {/* 15. PLAN A PROJECT MODAL (STAGED 40/40/20 ESCROW) */}
+      <ProjectPlannerModal
+        isOpen={projectPlannerOpen}
+        onClose={() => setProjectPlannerOpen(false)}
+        onProjectCreated={(project) => {
+          setBookingHistory((prev) => [
+            {
+              id: `PRJ-${Math.floor(1000 + Math.random() * 9000)}`,
+              serviceTitle: project.title,
+              category: project.category,
+              date: 'Scheduled (40/40/20)',
+              proName: 'Joseph Boateng (Elite Master)',
+              proInitials: 'JB',
+              proRating: 4.95,
+              isGhanaCardVerified: true,
+              price: project.total,
+              status: 'In Escrow',
+              address: 'East Legon (GA-492-3841), Accra',
+              paymentMethod: 'Fixly Escrow (MTN MoMo)',
+            },
+            ...prev,
+          ]);
+          setUserProfile((prev) => ({
+            ...prev,
+            amountInEscrow: prev.amountInEscrow + Math.round(project.total * 0.4),
+          }));
+        }}
       />
     </div>
   );

@@ -24,7 +24,7 @@ import {
   Layers,
   ArrowRight,
   ShieldCheck,
-  DollarSign,
+  Coins,
   Lock,
   Unlock,
   Sliders,
@@ -365,7 +365,7 @@ export const OpsConsole: React.FC<OpsConsoleProps> = ({ onLogoutAdmin }) => {
           { id: 'disputes', label: `Dispute Tickets (${activeDisputesCount})`, icon: FileText },
           { id: 'ghana_card', label: `Ghana Card Audits (${pendingAuditsCount})`, icon: ShieldCheck },
           { id: 'claim_limits', label: 'Pro Claim Limits & Guarantors', icon: Sliders },
-          { id: 'escrow', label: 'Manual Escrow Releases & Overrides', icon: DollarSign },
+          { id: 'escrow', label: 'Manual Escrow Releases & Overrides', icon: Coins },
           { id: 'sos', label: `Emergency SOS (${activeSosCount})`, icon: AlertTriangle },
         ].map((tab) => {
           const Icon = tab.icon;

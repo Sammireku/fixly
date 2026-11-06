@@ -3,7 +3,7 @@ import {
   Wrench, Zap, Shield, MapPin, Search, Clock, Camera, Mic, 
   Phone, MessageSquare, Share2, CheckCircle2, AlertTriangle, 
   ChevronRight, ArrowLeft, Star, FileText, Plus, Check, 
-  Navigation, User, ShieldCheck, CreditCard, DollarSign, 
+  Navigation, User, ShieldCheck, CreditCard, Banknote, 
   Lock, RefreshCw, AlertCircle, Info, ExternalLink, Sliders,
   Calendar, Layers, Filter, Send, Play, Radio
 } from 'lucide-react';
@@ -1170,7 +1170,7 @@ function ProWallet({ onBack }: { onBack: () => void }) {
       </div>
 
       <button className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl text-xs shadow-lg shadow-emerald-600/30 transition flex items-center justify-center space-x-2 cursor-pointer">
-        <DollarSign className="w-4 h-4" />
+        <Banknote className="w-4 h-4" />
         <span>Cash Out to Mobile Money (MoMo)</span>
       </button>
 

@@ -34,6 +34,7 @@ import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId } from './types';
 import { FixlyLogo } from './FixlyLogo';
 import { SERVICE_CATALOG, SERVICE_CATEGORIES } from '../../data/catalog';
+import { formatCurrency } from '../../lib/currency';
 
 interface Screen1HomeProps {
   onNavigateToCategories: () => void;
@@ -46,6 +47,7 @@ interface Screen1HomeProps {
   onOpenCostEstimator?: () => void;
   onOpenMapView?: () => void;
   onOpenReferralModal?: () => void;
+  onOpenProjectPlanner?: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
@@ -80,6 +82,7 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
   onOpenCostEstimator,
   onOpenMapView,
   onOpenReferralModal,
+  onOpenProjectPlanner,
   onTabChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -284,7 +287,7 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
 
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-xs font-bold text-slate-800">
-                          GH₵{srv.basePrice}
+                          {formatCurrency(srv.basePrice)}
                         </span>
                         <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#1E5BF0] group-hover:translate-x-0.5 transition-all" />
                       </div>
@@ -319,7 +322,7 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
           </div>
 
           <div
-            onClick={onNavigateToCategories}
+            onClick={onOpenProjectPlanner || onNavigateToCategories}
             className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs cursor-pointer hover:border-blue-300 transition-all flex flex-col justify-between group"
           >
             <div className="flex items-center justify-between mb-2">

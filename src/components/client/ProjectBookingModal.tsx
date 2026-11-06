@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { usePreventScroll } from '../../hooks/usePreventScroll';
 import { ACCRA_AREAS, INITIAL_PROS } from '../../data/catalog';
 import { TradeType, ProjectMilestone } from '../../types';
+import { formatCurrency } from '../../lib/currency';
 import {
   X,
   Sparkles,
@@ -287,7 +288,7 @@ export const ProjectBookingModal: React.FC<ProjectBookingModalProps> = ({
                     <span className="font-medium text-slate-800">{ms.title}</span>
                   </div>
                   <span className="font-mono font-bold text-slate-900">
-                    GH₵ {ms.amount}
+                    {formatCurrency(ms.amount)}
                   </span>
                 </div>
               ))}
@@ -318,7 +319,7 @@ export const ProjectBookingModal: React.FC<ProjectBookingModalProps> = ({
                   <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
                     <span>Ghana Card Verified</span>
                     <span>·</span>
-                    <span>GH₵15,000 Claim Limit</span>
+                    <span>{formatCurrency(15000)} Claim Limit</span>
                     <span>·</span>
                     <span>112 Projects</span>
                   </div>
@@ -333,10 +334,10 @@ export const ProjectBookingModal: React.FC<ProjectBookingModalProps> = ({
           <div>
             <span className="text-xs text-slate-500 block">Total Project Escrow:</span>
             <span className="font-mono text-base font-extrabold text-slate-900">
-              GH₵ {totalAmount}.00
+              {formatCurrency(totalAmount)}
             </span>
             <span className="text-[10px] text-emerald-700 font-bold block">
-              Includes GH₵ {protectionFee}.00 Escrow & Guarantor Cover
+              Includes {formatCurrency(protectionFee)} Escrow & Guarantor Cover
             </span>
           </div>
 

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { BookingHistoryItem } from './types';
 import { GhanaCardBadge } from './GhanaCardBadge';
+import { formatCurrency } from '../../lib/currency';
 
 interface BookingHistoryModalProps {
   isOpen: boolean;
@@ -117,7 +118,7 @@ export const BookingHistoryModal: React.FC<BookingHistoryModalProps> = ({
                       {item.status}
                     </span>
                     <span className="text-sm font-extrabold text-slate-900 block mt-1">
-                      ${item.price.toFixed(2)}
+                      {formatCurrency(item.price)}
                     </span>
                   </div>
                 </div>
@@ -216,7 +217,7 @@ export const BookingHistoryModal: React.FC<BookingHistoryModalProps> = ({
               </div>
               <div className="flex justify-between pt-2 border-t border-slate-100 font-extrabold text-sm">
                 <span>Amount Paid:</span>
-                <span className="text-[#1E5BF0]">${selectedReceipt.price.toFixed(2)}</span>
+                <span className="text-[#1E5BF0]">{formatCurrency(selectedReceipt.price)}</span>
               </div>
             </div>
 

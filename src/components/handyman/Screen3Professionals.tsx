@@ -3,6 +3,7 @@ import { Bell, ChevronRight, MapPin, ShieldCheck, Award } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId, ProItem, FilterState } from './types';
 import { GhanaCardBadge } from './GhanaCardBadge';
+import { formatCurrency } from '../../lib/currency';
 
 interface Screen3ProfessionalsProps {
   onSelectPro: (pro: ProItem) => void;
@@ -189,7 +190,7 @@ export const Screen3Professionals: React.FC<Screen3ProfessionalsProps> = ({
                         {pro.category} • {pro.experience}
                       </span>
                       <span className="text-[11px] text-slate-800 font-medium block mt-0.5 tracking-tight">
-                        Starting at ${pro.hourlyRate}/hr
+                        Starting at {formatCurrency(pro.hourlyRate)}/hr
                       </span>
                     </div>
                   </div>

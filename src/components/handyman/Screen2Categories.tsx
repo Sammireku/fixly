@@ -31,6 +31,7 @@ import { FlowTag } from '../../types';
 interface Screen2CategoriesProps {
   onSelectCategory: (categoryName: string) => void;
   onOpenNotifications?: () => void;
+  onOpenProjectPlanner?: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
@@ -57,6 +58,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 export const Screen2Categories: React.FC<Screen2CategoriesProps> = ({
   onSelectCategory,
   onOpenNotifications,
+  onOpenProjectPlanner,
   onTabChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,6 +152,29 @@ export const Screen2Categories: React.FC<Screen2CategoriesProps> = ({
 
       {/* Scrollable Category Grid */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+        {/* Project Planner Banner for PR services */}
+        {onOpenProjectPlanner && (
+          <div
+            onClick={onOpenProjectPlanner}
+            className="p-4 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md cursor-pointer hover:opacity-95 transition-all flex items-center justify-between group"
+          >
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full inline-block mb-1">
+                Quoted & Staged Projects
+              </span>
+              <h4 className="text-xs font-extrabold text-white">
+                Planning POP, Tiling, or Custom Joinery?
+              </h4>
+              <p className="text-[11px] text-purple-100 mt-0.5">
+                Get itemized quotes, diagnostic site inspections & 40/40/20 escrow milestones.
+              </p>
+            </div>
+            <button className="px-3 py-1.5 bg-white text-purple-700 text-xs font-bold rounded-xl shadow-xs group-hover:scale-105 transition-transform shrink-0 ml-3">
+              Plan Project →
+            </button>
+          </div>
+        )}
+
         {filteredCategories.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 text-xs">
             No categories match your search filter.
