@@ -9,6 +9,7 @@ import {
   FilterState,
   ProProfileDetails,
 } from './types';
+import { Job } from '../../types';
 import { Screen1Home } from './Screen1Home';
 import { Screen2Categories } from './Screen2Categories';
 import { Screen3Professionals } from './Screen3Professionals';
@@ -21,8 +22,17 @@ import { ProfileSettingsModal } from './ProfileSettingsModal';
 import { BookingHistoryModal } from './BookingHistoryModal';
 import { SearchFilterModal } from './SearchFilterModal';
 import { ProOnboardingModal } from './ProOnboardingModal';
+import { ReferralModal } from './ReferralModal';
+import { StaffAuthModal } from '../auth/StaffAuthModal';
 import { EmergencySosModal } from '../EmergencySosModal';
 import { DisputeModal } from '../DisputeModal';
+import { AccraCostEstimator } from '../common/AccraCostEstimator';
+import { ArtisanMapView } from '../map/ArtisanMapView';
+import { OpsConsole } from '../ops/OpsConsole';
+import { VoiceToTextRecorder } from '../VoiceToTextRecorder';
+import { JobChatModal } from '../chat/JobChatModal';
+import { INITIAL_PROS, INITIAL_SAMPLE_JOBS } from '../../data/catalog';
+import { X, Mic } from 'lucide-react';
 
 export const HandymanApp: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<ScreenId>('home');
@@ -34,6 +44,15 @@ export const HandymanApp: React.FC = () => {
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeJobId, setDisputeJobId] = useState('BKG-9921');
+
+  // NEW Feature Modal States
+  const [referralModalOpen, setReferralModalOpen] = useState(false);
+  const [costEstimatorOpen, setCostEstimatorOpen] = useState(false);
+  const [mapViewOpen, setMapViewOpen] = useState(false);
+  const [staffAuthModalOpen, setStaffAuthModalOpen] = useState(false);
+  const [voiceSearchOpen, setVoiceSearchOpen] = useState(false);
+  const [chatModalOpen, setChatModalOpen] = useState(false);
+  const [activeChatJob, setActiveChatJob] = useState<Job>(INITIAL_SAMPLE_JOBS[0]);
 
   // User Profile State with Mini Dashboard metrics & Ghana Card & Pro profile capability
   const [userProfile, setUserProfile] = useState<UserProfile>({
@@ -223,6 +242,33 @@ export const HandymanApp: React.FC = () => {
     setCurrentScreen('profile');
   };
 
+  // AUTOMATIC REDIRECTION: If authenticated as admin@fixlygh.com (role: ops), display Operations Tower!
+  if (userProfile.role === 'ops' || userProfile.email === 'admin@fixlygh.com') {
+    return (
+      <div className="min-h-screen bg-slate-950 p-3 sm:p-6 text-slate-100 font-sans antialiased selection:bg-purple-600 selection:text-white">
+        <OpsConsole
+          onLogoutAdmin={() => {
+            setUserProfile({
+              name: 'Maya Johnson',
+              email: 'maya.johnson@email.com',
+              phone: '+233 24 412 8891',
+              address: '123 Oak Street, Austin, TX 78701',
+              isGhanaCardVerified: true,
+              ghanaCardNumber: 'GHA-72019482-1',
+              amountSpent: 1420.0,
+              amountInEscrow: 120.0,
+              completedBookingsCount: 14,
+              emergencyContact: 'Kofi Johnson (+233 20 882 1109)',
+              avatarUrl: '',
+              role: 'client',
+            });
+            setCurrentScreen('home');
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#ECEEF2] text-slate-900 flex justify-center font-sans antialiased selection:bg-[#1E5BF0] selection:text-white">
       {/* Responsive App Container */}
@@ -235,6 +281,10 @@ export const HandymanApp: React.FC = () => {
             onOpenNotifications={() => setNotificationsOpen(true)}
             onOpenFilters={() => setFiltersOpen(true)}
             onOpenSos={() => setSosModalOpen(true)}
+            onOpenVoiceSearch={() => setVoiceSearchOpen(true)}
+            onOpenCostEstimator={() => setCostEstimatorOpen(true)}
+            onOpenMapView={() => setMapViewOpen(true)}
+            onOpenReferralModal={() => setReferralModalOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -271,6 +321,8 @@ export const HandymanApp: React.FC = () => {
             onOpenNotifications={() => setNotificationsOpen(true)}
             onOpenProfileSettings={() => setProfileSettingsOpen(true)}
             onOpenBookingHistory={() => setBookingHistoryOpen(true)}
+            onOpenReferralModal={() => setReferralModalOpen(true)}
+            onOpenStaffLogin={() => setStaffAuthModalOpen(true)}
             onSwitchToPro={handleSwitchToPro}
             onTabChange={handleTabChange}
           />
@@ -290,6 +342,7 @@ export const HandymanApp: React.FC = () => {
         {currentScreen === 'wallet' && (
           <Screen6Wallet
             onOpenNotifications={() => setNotificationsOpen(true)}
+            onOpenReferralModal={() => setReferralModalOpen(true)}
             onTabChange={handleTabChange}
           />
         )}
@@ -360,6 +413,123 @@ export const HandymanApp: React.FC = () => {
         isOpen={disputeModalOpen}
         onClose={() => setDisputeModalOpen(false)}
         jobId={disputeJobId}
+      />
+
+      {/* 8. REFERRAL PROGRAM MODAL */}
+      <ReferralModal
+        isOpen={referralModalOpen}
+        onClose={() => setReferralModalOpen(false)}
+        userCode={`FIXLY-${userProfile.name.split(' ')[0].toUpperCase()}-8821`}
+      />
+
+      {/* 9. ACCRA COST ESTIMATOR MODAL */}
+      {costEstimatorOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#F8F9FB]">
+              <span className="text-sm font-extrabold text-slate-900">
+                Accra Materials & Labor Cost Estimator
+              </span>
+              <button
+                onClick={() => setCostEstimatorOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-200/60 flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-4 overflow-y-auto flex-1">
+              <AccraCostEstimator
+                initialAreaName="East Legon (American House)"
+                onSelectAndBook={(service) => {
+                  handleSelectService(service.title, service.basePrice);
+                  setCostEstimatorOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 10. LIVE ARTISAN MAP VIEW MODAL */}
+      {mapViewOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-[#F8F9FB]">
+              <span className="text-sm font-extrabold text-slate-900">
+                Live GPS Artisan Radar (East Legon & Accra)
+              </span>
+              <button
+                onClick={() => setMapViewOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-200/60 flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              <ArtisanMapView
+                pros={INITIAL_PROS}
+                currentAreaName="East Legon"
+                onBookArtisan={(proId, suggestedService) => {
+                  if (suggestedService) {
+                    handleSelectService(suggestedService.title, suggestedService.basePrice);
+                  } else {
+                    handleSelectCategory('Handyman');
+                  }
+                  setMapViewOpen(false);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 11. STAFF & OPS AUTHENTICATION MODAL */}
+      <StaffAuthModal
+        isOpen={staffAuthModalOpen}
+        onClose={() => setStaffAuthModalOpen(false)}
+        onSuccess={(adminProfile) => {
+          setUserProfile(adminProfile);
+        }}
+      />
+
+      {/* 12. VOICE SEARCH RECORDER MODAL */}
+      {voiceSearchOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[#1E5BF0]">
+                <Mic className="w-5 h-5 stroke-[2]" />
+                <h3 className="text-base font-extrabold text-slate-900">
+                  Voice Search (English & Twi)
+                </h3>
+              </div>
+              <button
+                onClick={() => setVoiceSearchOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <VoiceToTextRecorder
+              onTranscriptComplete={(transcript, nuances) => {
+                setFilters((prev) => ({
+                  ...prev,
+                  searchQuery: transcript,
+                }));
+                setVoiceSearchOpen(false);
+                setCurrentScreen('pros');
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* 13. JOB CHAT MODAL */}
+      <JobChatModal
+        job={activeChatJob}
+        isOpen={chatModalOpen}
+        onClose={() => setChatModalOpen(false)}
       />
     </div>
   );

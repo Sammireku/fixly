@@ -22,6 +22,8 @@ interface Screen5ProfileProps {
   onOpenNotifications?: () => void;
   onOpenProfileSettings: () => void;
   onOpenBookingHistory: () => void;
+  onOpenReferralModal?: () => void;
+  onOpenStaffLogin?: () => void;
   onSwitchToPro: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
@@ -31,6 +33,8 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
   onOpenNotifications,
   onOpenProfileSettings,
   onOpenBookingHistory,
+  onOpenReferralModal,
+  onOpenStaffLogin,
   onSwitchToPro,
   onTabChange,
 }) => {
@@ -238,32 +242,44 @@ export const Screen5Profile: React.FC<Screen5ProfileProps> = ({
 
         {/* Royal Blue Banner: Invite friends */}
         <div
-          onClick={handleShare}
+          onClick={() => (onOpenReferralModal ? onOpenReferralModal() : handleShare())}
           className="bg-[#1E5BF0] text-white rounded-2xl p-4.5 cursor-pointer hover:opacity-98 transition-all shadow-sm relative overflow-hidden group"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white tracking-tight">
-              Invite friends
+              Invite friends & get GH₵25
             </h3>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleShare();
+                if (onOpenReferralModal) onOpenReferralModal();
+                else handleShare();
               }}
               className="bg-white/20 text-white font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-xs flex items-center gap-1 hover:bg-white/30 transition-colors"
             >
-              {copiedInvite ? <Check className="w-2.5 h-2.5" /> : null}
-              <span>{copiedInvite ? 'COPIED' : 'SHARE'}</span>
+              <span>INVITE CODE</span>
             </button>
           </div>
 
           <p className="text-xs text-blue-100 font-medium mt-1 leading-snug">
-            Share Handyman and earn credits
+            Give GH₵25, Get GH₵25 wallet credit
           </p>
 
           <p className="text-[10px] text-blue-200/90 font-normal mt-3 tracking-tight">
             Verified pros • fast booking • clear pricing
           </p>
+        </div>
+
+        {/* Discreet Staff Portal Sign-In */}
+        <div className="pt-2 text-center pb-1">
+          <button
+            type="button"
+            onClick={onOpenStaffLogin}
+            className="text-[11px] text-slate-400 hover:text-purple-600 font-semibold inline-flex items-center gap-1.5 cursor-pointer py-1.5 px-3 rounded-full hover:bg-slate-200/50 transition-colors"
+          >
+            <Lock className="w-3 h-3 text-slate-400" />
+            <span>Fixly Operations Tower Staff Sign-In</span>
+          </button>
         </div>
       </div>
 

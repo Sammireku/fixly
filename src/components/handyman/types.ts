@@ -2,7 +2,7 @@ export type ScreenId = 'home' | 'categories' | 'pros' | 'confirmation' | 'profil
 
 export type BottomTabId = 'home' | 'bookings' | 'wallet' | 'account';
 
-export type UserRole = 'client' | 'pro';
+export type UserRole = 'client' | 'pro' | 'ops';
 
 export interface ProItem {
   id: string;

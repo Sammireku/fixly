@@ -25,6 +25,10 @@ import {
   Flower2,
   Maximize2,
   Grid,
+  Mic,
+  Calculator,
+  Gift,
+  Compass,
 } from 'lucide-react';
 import { BottomNavBar } from './BottomNavBar';
 import { BottomTabId } from './types';
@@ -38,6 +42,10 @@ interface Screen1HomeProps {
   onOpenNotifications?: () => void;
   onOpenFilters?: () => void;
   onOpenSos?: () => void;
+  onOpenVoiceSearch?: () => void;
+  onOpenCostEstimator?: () => void;
+  onOpenMapView?: () => void;
+  onOpenReferralModal?: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
@@ -68,6 +76,10 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
   onOpenNotifications,
   onOpenFilters,
   onOpenSos,
+  onOpenVoiceSearch,
+  onOpenCostEstimator,
+  onOpenMapView,
+  onOpenReferralModal,
   onTabChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -174,11 +186,49 @@ export const Screen1Home: React.FC<Screen1HomeProps> = ({
             )}
             <button
               type="button"
+              onClick={onOpenVoiceSearch}
+              className="p-1 rounded-lg hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer"
+              title="Voice Search (English & Twi)"
+            >
+              <Mic className="w-4 h-4 stroke-[1.8]" />
+            </button>
+            <button
+              type="button"
               onClick={onOpenFilters}
               className="p-1 rounded-lg hover:bg-blue-50 text-slate-500 hover:text-[#1E5BF0] transition-colors cursor-pointer"
               title="Filter by proximity, rating, verified, insured..."
             >
               <SlidersHorizontal className="w-4 h-4 stroke-[1.8]" />
+            </button>
+          </div>
+
+          {/* Quick Feature Shortcut Pills Bar */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-0.5 scrollbar-none text-[10px]">
+            <button
+              type="button"
+              onClick={onOpenCostEstimator}
+              className="px-2.5 py-1 bg-white border border-slate-200/90 rounded-full font-bold text-slate-700 hover:text-[#1E5BF0] hover:border-blue-300 flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0"
+            >
+              <Calculator className="w-3 h-3 text-[#1E5BF0]" />
+              <span>Cost Estimator</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenMapView}
+              className="px-2.5 py-1 bg-white border border-slate-200/90 rounded-full font-bold text-slate-700 hover:text-[#1E5BF0] hover:border-blue-300 flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0"
+            >
+              <Compass className="w-3 h-3 text-[#1E5BF0]" />
+              <span>Live Artisan Map</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onOpenReferralModal}
+              className="px-2.5 py-1 bg-gradient-to-r from-blue-600 to-[#1E5BF0] text-white rounded-full font-bold flex items-center gap-1 transition-all cursor-pointer shadow-2xs shrink-0"
+            >
+              <Gift className="w-3 h-3 text-amber-300" />
+              <span>GH₵25 Invite Bonus</span>
             </button>
           </div>
 

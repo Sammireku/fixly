@@ -279,12 +279,44 @@ export interface DisputeRecord {
   status: 'open' | 'pro_responded' | 'ops_review' | 'resolved' | 'escalated_to_claim';
   proResponse?: string;
   opsResolution?: {
-    action: 'rework_ordered' | 'partial_refund' | 'full_refund' | 'released_to_pro';
+    action: 'rework_ordered' | 'partial_refund' | 'full_refund' | 'released_to_pro' | 'escalated_to_claim';
     amount?: number;
     notes: string;
     resolvedAt: string;
+    adminEmail?: string;
   };
   createdAt: string;
+}
+
+export interface GhanaCardAuditRecord {
+  id: string;
+  userId: string;
+  userName: string;
+  userRole: 'pro' | 'client';
+  phone: string;
+  trade?: string;
+  ghanaCardNumber: string;
+  cardFrontUrl?: string;
+  cardBackUrl?: string;
+  selfieUrl?: string;
+  submissionDate: string;
+  status: 'pending' | 'failed' | 'verified' | 'flagged';
+  failureReason?: string;
+  biometricMatchScore?: number; // e.g. 62 vs 75 threshold
+  notes?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+}
+
+export interface EscrowAuditLog {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  action: 'force_release_pro' | 'freeze_escrow' | 'force_refund_client' | 'release_preauth';
+  amount: number;
+  reason: string;
+  adminEmail: string;
+  timestamp: string;
 }
 
 export interface SosAlert {

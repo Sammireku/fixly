@@ -12,11 +12,13 @@ import { BottomTabId } from './types';
 
 interface Screen6WalletProps {
   onOpenNotifications?: () => void;
+  onOpenReferralModal?: () => void;
   onTabChange: (tab: BottomTabId) => void;
 }
 
 export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
   onOpenNotifications,
+  onOpenReferralModal,
   onTabChange,
 }) => {
   const [balance, setBalance] = useState(128.5);
@@ -156,27 +158,27 @@ export const Screen6Wallet: React.FC<Screen6WalletProps> = ({
 
         {/* Royal Blue Banner: Invite friends */}
         <div
-          onClick={handleShare}
+          onClick={() => (onOpenReferralModal ? onOpenReferralModal() : handleShare())}
           className="bg-[#1E5BF0] text-white rounded-2xl p-4.5 cursor-pointer hover:opacity-98 transition-all shadow-sm relative overflow-hidden group"
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white tracking-tight">
-              Invite friends
+              Invite friends & get GH₵25
             </h3>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                handleShare();
+                if (onOpenReferralModal) onOpenReferralModal();
+                else handleShare();
               }}
               className="bg-white/20 text-white font-bold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-xs flex items-center gap-1 hover:bg-white/30 transition-colors"
             >
-              {copiedInvite ? <Check className="w-2.5 h-2.5" /> : null}
-              <span>{copiedInvite ? 'COPIED' : 'SHARE'}</span>
+              <span>INVITE CODE</span>
             </button>
           </div>
 
           <p className="text-xs text-blue-100 font-medium mt-1 leading-snug">
-            Share Handyman and earn credits
+            Give GH₵25, Get GH₵25 wallet credit
           </p>
 
           <p className="text-[10px] text-blue-200/90 font-normal mt-3 tracking-tight">
