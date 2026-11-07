@@ -31,7 +31,7 @@ import { ArtisanMapView } from '../map/ArtisanMapView';
 import { OpsConsole } from '../ops/OpsConsole';
 import { VoiceToTextRecorder } from '../VoiceToTextRecorder';
 import { JobChatModal } from '../chat/JobChatModal';
-import { SmsWhatsappNotificationCenter } from '../common/SmsWhatsappNotificationCenter';
+import { ProJobRequestModal } from '../common/ProJobRequestModal';
 import { ProjectPlannerModal } from './ProjectPlannerModal';
 import { INITIAL_PROS, INITIAL_SAMPLE_JOBS } from '../../data/catalog';
 import { X, Mic } from 'lucide-react';
@@ -47,6 +47,10 @@ export const HandymanApp: React.FC = () => {
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [disputeModalOpen, setDisputeModalOpen] = useState(false);
   const [disputeJobId, setDisputeJobId] = useState('BKG-9921');
+
+  // Pro Job Customization Window state
+  const [proJobModalOpen, setProJobModalOpen] = useState(false);
+  const [selectedProForJob, setSelectedProForJob] = useState<ProItem | null>(null);
 
   // NEW Feature Modal States
   const [referralModalOpen, setReferralModalOpen] = useState(false);
@@ -166,15 +170,8 @@ export const HandymanApp: React.FC = () => {
   };
 
   const handleSelectPro = (pro: ProItem) => {
-    setBooking((prev) => ({
-      ...prev,
-      proName: pro.name,
-      proInitials: pro.initials,
-      total: pro.hourlyRate * 2,
-      escrowAmount: pro.hourlyRate * 2,
-      isGhanaCardVerified: pro.isGhanaCardVerified,
-    }));
-    setCurrentScreen('confirmation');
+    setSelectedProForJob(pro);
+    setProJobModalOpen(true);
   };
 
   const handleRebook = (item: BookingHistoryItem) => {
@@ -540,10 +537,30 @@ export const HandymanApp: React.FC = () => {
         onClose={() => setChatModalOpen(false)}
       />
 
-      {/* 14. ARTISAN OFFLINE SMS & WHATSAPP BROADCAST CENTER */}
-      <SmsWhatsappNotificationCenter
-        isOpen={broadcastCenterOpen}
-        onClose={() => setBroadcastCenterOpen(false)}
+      {/* 14. PRO JOB CUSTOMIZATION REQUEST WINDOW */}
+      <ProJobRequestModal
+        isOpen={proJobModalOpen}
+        onClose={() => setProJobModalOpen(false)}
+        pro={selectedProForJob}
+        onSubmitRequest={(details) => {
+          if (selectedProForJob) {
+            setBooking({
+              serviceName: details.primaryService,
+              proName: selectedProForJob.name,
+              proInitials: selectedProForJob.initials,
+              duration: '2 hours',
+              address: 'East Legon (GA-392-1049), Accra',
+              paymentMethod: 'Fixly Escrow (MTN MoMo)',
+              total: details.totalGhs,
+              escrowAmount: details.totalGhs,
+              arrivalWindow: details.arrivalWindow,
+              status: 'Confirmed',
+              dateStr: 'Scheduled • Today',
+              isGhanaCardVerified: selectedProForJob.isGhanaCardVerified,
+            });
+            setCurrentScreen('confirmation');
+          }
+        }}
       />
 
       {/* 15. PLAN A PROJECT MODAL (STAGED 40/40/20 ESCROW) */}
